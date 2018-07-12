@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-char *ContestantChoiceStr[] = {"to stick with door", "to change to door"};
+#define CLEARSCR "\033[2J"
+#define ZEROCURSOR "\033[H"
+
+const char *ContestantChoiceStr[] = {"to stick with door", "to change to door"};
 
 int main() {
   int numWonWSwitch=0;
@@ -20,9 +23,9 @@ int main() {
 
   int num;
 
-   printf("\033[2J");
+  printf(CLEARSCR);
   for (num=0;;num++) {
-   printf("\033[H");
+    printf(ZEROCURSOR);
     decision = random()%2;
     correctDoor = random() % 3;
     percentWonWSwitch = ((float)numWonWSwitch / ((float)numWonWSwitch+numLostWSwitch)) * 100.0f;
@@ -32,26 +35,28 @@ int main() {
     printf(" - Random winning door is %d\n", correctDoor);
     chosenDoor = random() % 3;
     printf(" - Contestant chose door %d\n", chosenDoor);
-    do
+
+    do // Pick a door to exclude
       excludedDoor = random() % 3;
     while(excludedDoor == correctDoor || excludedDoor == chosenDoor);
 
-    do
-      altDoor = random() % 3;
+    do // Pick an alternate door to offer 
+      altDoor = random() % 3;  // NOTE: There might be a better way to do this
     while(altDoor == chosenDoor || altDoor == excludedDoor);
 
     printf(" - Host excluded door %d, option to change to door %d presented\n", excludedDoor, altDoor);
     printf(" - Contestant decided %s %d        \n", ContestantChoiceStr[decision], (chosenDoor = (decision) ? altDoor:chosenDoor));
+
     if (correctDoor == chosenDoor) {
       if (decision) numWonWSwitch++;
       else numWonWoSwitch++;
-    printf(" - Contestant Won \n");
-   }
-   else {
+      printf(" - Contestant Won \n");
+    }
+    else {
       if (decision) numLostWSwitch++;
       else numLostWoSwitch++;
-   printf(" - Contestant Lost\n");
-   }
-getchar();
-   }
+      printf(" - Contestant Lost\n");
+    }
+//getchar(); // Need to make this a command line argument, amount various other things i need to do
+  }
 };
