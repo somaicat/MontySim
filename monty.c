@@ -1,10 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <signal.h>
 
 #define CLEARSCR "\033[2J"
 #define ZEROCURSOR "\033[H"
 
 const char *ContestantChoiceStr[] = {"to stick with door", "to change to door"};
+int killtime=0;
+
+void sighandler(int num) {
+  killtime=1; // Using a global for now in preparation for future threading support
+}
 
 int main() {
   int numWonWSwitch=0;
@@ -22,17 +28,19 @@ int main() {
   long int altDoor;
 
   int num;
+  printf("Installing signal handler...\n");
+  signal(SIGINT, sighandler);
 
   printf(CLEARSCR);
-  for (num=0;;num++) {
+  for (num=0; !killtime;num++) {
     printf(ZEROCURSOR);
     decision = random()%2;
     correctDoor = random() % 3;
     percentWonWSwitch = ((float)numWonWSwitch / ((float)numWonWSwitch+numLostWSwitch)) * 100.0f;
     percentWonWoSwitch = ((float)numWonWoSwitch / ((float)numWonWoSwitch+numLostWoSwitch)) * 100.0f;
-    printf("Beginning game %d (%d:%d Wins to loss \\w switch, %d:%d wins to loss \\wo switch)\n", num, numWonWSwitch, numLostWSwitch, numWonWoSwitch, numLostWoSwitch);
+    printf("Score: (%d:%d Wins to loss \\w switch, %d:%d wins to loss \\wo switch)\n", numWonWSwitch, numLostWSwitch, numWonWoSwitch, numLostWoSwitch);
     printf("Winning percentage: %.2f%% \\w switch, %.2f%% \\wo switch\n", percentWonWSwitch, percentWonWoSwitch); 
-    printf(" - Game started, (winning door is %d)\n", correctDoor);
+    printf(" - Game %d started, (winning door is %d)\n", num, correctDoor);
     chosenDoor = random() % 3;
     printf(" - Contestant chose door %d\n", chosenDoor);
 
@@ -57,6 +65,10 @@ int main() {
       else numLostWoSwitch++;
       printf(" - Contestant Lost\n");
     }
+
 //getchar(); // Need to make this a command line argument, amount various other things i need to do
   }
+
+  printf("Ending game loop.\n");
+
 };
