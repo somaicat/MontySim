@@ -32,7 +32,7 @@ int main() {
     percentWonWoSwitch = ((float)numWonWoSwitch / ((float)numWonWoSwitch+numLostWoSwitch)) * 100.0f;
     printf("Beginning game %d (%d:%d Wins to loss \\w switch, %d:%d wins to loss \\wo switch)\n", num, numWonWSwitch, numLostWSwitch, numWonWoSwitch, numLostWoSwitch);
     printf("Winning percentage: %.2f%% \\w switch, %.2f%% \\wo switch\n", percentWonWSwitch, percentWonWoSwitch); 
-    printf(" - Random winning door is %d\n", correctDoor);
+    printf(" - Game started, (winning door is %d)\n", correctDoor);
     chosenDoor = random() % 3;
     printf(" - Contestant chose door %d\n", chosenDoor);
 
