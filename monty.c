@@ -57,13 +57,11 @@ int main() {
     chosenDoor = random() % 3;
     printf(" - Contestant chose door %d\n", chosenDoor);
 
-    do // Pick a door to exclude
-      excludedDoor = random() % 3;
-    while(excludedDoor == correctDoor || excludedDoor == chosenDoor);
+    // Pick a door to exclude
+    for (excludedDoor=0;excludedDoor==correctDoor || excludedDoor == chosenDoor;excludedDoor++);
 
-    do // Pick an alternate door to offer 
-      altDoor = random() % 3;  // NOTE: There might be a better way to do this
-    while(altDoor == chosenDoor || altDoor == excludedDoor);
+    // Pick an alternate door to offer
+    for (altDoor=0;altDoor == chosenDoor || altDoor == excludedDoor;altDoor++);
 
     printf(" - Host excluded door %d, option to change to door %d presented\n", excludedDoor, altDoor);
     printf(" - Contestant decided %s %d        \n", ContestantChoiceStr[decision], (chosenDoor = (decision) ? altDoor:chosenDoor));
