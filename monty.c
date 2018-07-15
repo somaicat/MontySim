@@ -4,7 +4,7 @@
 
 #define CLEARSCR "\033[2J"
 #define ZEROCURSOR "\033[H"
-
+#define CPUNUM 4 // placeholder till I have detection coded
 const char *ContestantChoiceStr[] = {"to stick with door", "to change to door"};
 int killtime=0;
 
@@ -23,11 +23,11 @@ GameScore *gameScoreTable[64] = {0};
 void sighandler(int num) {
   killtime=1; // Using a global for now in preparation for future threading support
 }
-/* For future threading
-void *StartModel() {
+
+void *StartModel(int numOfThreads) {
 
 }
-*/
+
 
 void PlayRound(GameScore *score, int verbose) {
   long int correctDoor;
@@ -68,7 +68,7 @@ void PlayRound(GameScore *score, int verbose) {
   }
 }
 
-int main(int argc, int *argv) {
+int main(int argc, int *argv[]) {
   gameScoreTable[0] = calloc(1, sizeof(GameScore));
 
   int num;
@@ -79,7 +79,8 @@ int main(int argc, int *argv) {
   for (num=0; !killtime;num++) {
     printf(ZEROCURSOR);
     PlayRound(gameScoreTable[0], 1);
-//getchar(); // Need to make this a command line argument, amount various other things i need to do
+    if (argc > 1 && !strcasecmp(argv[1], "-s"))
+      getchar(); // Need to make this a command line argument, amount various other things i need to do
   }
   free(gameScoreTable[0]);
   printf("Ending game loop.\n");
