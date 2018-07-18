@@ -140,6 +140,7 @@ int main(int argc, int *argv[]) {
     pthread_create(&monThread, NULL, (void *)(void *) MonitorThread, NULL);
     for (num=0;num<CPUNUM;num++) { 
       pthread_join(gameThreadTable[num]->thread, 0);
+      free(gameThreadTable[num]);
     }
     pthread_join(monThread, 0);
   }
