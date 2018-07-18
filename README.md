@@ -5,4 +5,4 @@ Normally I wouldn't bother putting something like this on something like github,
 
 Todo:
 Needs a fair bit of optimization, there's probably variables I don't need.
-Something weird is up with multithreading, for some reason I seem to be losing overall effeciency by using multiple cores. Gonna check what it looks like as far as the threads affinity goes. Needs research.
+I doubt we need a seperate monitoring thread, should just make it the main thread here

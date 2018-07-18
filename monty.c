@@ -2,14 +2,15 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <pthread.h>
+#include <time.h>
 
 #define CLEARSCR "\033[2J"
 #define ZEROCURSOR "\033[H"
-#define CPUNUM 1 // placeholder till I have detection coded
+#define CPUNUM 4 // placeholder till I have detection coded
 const char *ContestantChoiceStr[] = {"to stick with door", "to change to door"};
 int killtime=0;
 int verbose;
-typedef struct GameScore {
+typedef struct GameScore { // Might not need volatile here, ill look into it later
   volatile int numWonWSwitch;
   volatile int numWonWoSwitch;
   volatile int numLostWSwitch;
@@ -17,6 +18,7 @@ typedef struct GameScore {
 
   volatile float percentWonWSwitch;
   volatile float percentWonWoSwitch;
+  unsigned int seed; // TODO: yeah this is a stupid place to put this, but i'll fix it later
 } GameScore;
 
 typedef struct GameThread {
@@ -41,11 +43,11 @@ void PlayGame(GameScore *score) {
 
   for (num=0; !killtime;num++) {
     if (verbose) printf(ZEROCURSOR);
-    decision = random()%2;
-    correctDoor = random() % 3;
+    decision = rand_r(&score->seed)%2;
+    correctDoor = rand_r(&score->seed) % 3;
     score->percentWonWSwitch = ((float)score->numWonWSwitch / ((float)score->numWonWSwitch+score->numLostWSwitch)) * 100.0f;
     score->percentWonWoSwitch = ((float)score->numWonWoSwitch / ((float)score->numWonWoSwitch+score->numLostWoSwitch)) * 100.0f;
-    chosenDoor = random() % 3;
+    chosenDoor = rand_r(&score->seed) % 3;
 
     if (verbose) {
       printf("Score: (%d:%d Wins to loss \\w switch, %d:%d wins to loss \\wo switch)\n", score->numWonWSwitch, score->numLostWSwitch, score->numWonWoSwitch, score->numLostWoSwitch);
@@ -133,6 +135,7 @@ int main(int argc, int *argv[]) {
     verbose=0;
     for (num=0;num<CPUNUM;num++) { 
       gameThreadTable[num] = StartGame();
+      gameThreadTable[num]->score.seed = (unsigned int) time(NULL);
     }
     pthread_create(&monThread, NULL, (void *)(void *) MonitorThread, NULL);
     for (num=0;num<CPUNUM;num++) { 
