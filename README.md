@@ -7,3 +7,4 @@ Normally I wouldn't bother putting something like this on something like github,
 ###### Todo:
 * Needs a fair bit of optimization, there's probably variables I don't need.
 * I doubt we need a seperate monitoring thread, should just make it the main thread here 
+* Need to improve how the text formatting is done

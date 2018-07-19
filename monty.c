@@ -111,7 +111,7 @@ void *MonitorThread(void *arg) {
       totalPercentWonWSwitch = ((float)totalNumWonWSwitch / ((float)totalNumWonWSwitch+totalNumLostWSwitch)) * 100.0f;
       totalPercentWonWoSwitch = ((float)totalNumWonWoSwitch / ((float)totalNumWonWoSwitch+totalNumLostWoSwitch)) * 100.0f;
       totalGames = totalNumWonWSwitch + totalNumWonWoSwitch + totalNumLostWSwitch + totalNumLostWoSwitch;
-      printf("\nTotal percentages %.2f won switching, %.2f won without switching\n",totalPercentWonWSwitch, totalPercentWonWoSwitch);
+      printf("\nTotal percentages %.2f% won switching, %.2f% won without switching\n",totalPercentWonWSwitch, totalPercentWonWoSwitch);
       printf("Total games played: %u\n",totalGames);
       totalNumWonWSwitch=0;
       totalNumWonWoSwitch=0;
