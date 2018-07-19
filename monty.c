@@ -9,7 +9,8 @@
 #define CPUNUM 4 // placeholder till I have detection coded
 const char *ContestantChoiceStr[] = {"to stick with door", "to change to door"};
 int killtime=0;
-int verbose;
+int verbose=0;
+int stop=0;
 typedef struct GameScore { // Might not need volatile here, ill look into it later
   volatile int numWonWSwitch;
   volatile int numWonWoSwitch;
@@ -74,8 +75,8 @@ void PlayGame(GameScore *score) {
       else score->numLostWoSwitch++;
       if (verbose) printf(" - Contestant Lost\n");
     }
-//      if (verbose)
-//        getchar(); // Need to make this a command line argument, amount various other things i need to do
+      if (stop && verbose)
+        getchar(); // Need to make this a command line argument, amount various other things i need to do
     }
 }
 
@@ -96,7 +97,6 @@ void *MonitorThread(void *arg) {
   unsigned int totalGames;
   int num;
   GameScore *score;
-  printf("Threads started, monitoring progress\n\n");
   while(!killtime) {
       printf(ZEROCURSOR);
       for (num=0; gameThreadTable[num] != NULL; num++) {
@@ -124,15 +124,19 @@ void *MonitorThread(void *arg) {
 int main(int argc, int *argv[]) {
   int num;
   pthread_t monThread;
-  gameThreadTable[0] = calloc(1, sizeof(GameThread));
   printf("Installing signal handler...\n");
   signal(SIGINT, sighandler);
 
   printf(CLEARSCR);
-  if (argc > 1 && !strcasecmp(argv[1], "-s"))
-    verbose = 1;
-  else { // Start multithreaded mode
-    verbose=0;
+
+  while ((num = getopt(argc, argv, "sg")) != -1) {
+    switch (num) {
+      case 's': verbose=1; break;
+      case 'g': stop=1; break;
+    }
+  }
+
+  if (!verbose) {// no verbose, start multithreaded operation
     for (num=0;num<CPUNUM;num++) { 
       gameThreadTable[num] = StartGame();
       gameThreadTable[num]->score.seed = (unsigned int) time(NULL);
@@ -144,10 +148,11 @@ int main(int argc, int *argv[]) {
     }
     pthread_join(monThread, 0);
   }
-
-  verbose=1;
-  PlayGame(&gameThreadTable[0]->score);
-  free(gameThreadTable[0]);
+  else {
+    gameThreadTable[0] = calloc(1, sizeof(GameThread));
+    PlayGame(&gameThreadTable[0]->score);
+    free(gameThreadTable[0]);
+  }
   printf("Ending game loop.\n");
 
 };
