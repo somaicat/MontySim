@@ -14,10 +14,10 @@ int killtime=0;
 int verbose=0;
 int stop=0;
 typedef struct GameScore { // Might not need volatile here, ill look into it later
-  int numWonWSwitch;
-  int numWonWoSwitch;
-  int numLostWSwitch;
-  int numLostWoSwitch;
+  unsigned long long numWonWSwitch;
+  unsigned long long numWonWoSwitch;
+  unsigned long long numLostWSwitch;
+  unsigned long long numLostWoSwitch;
   float percentWonWSwitch;
   float percentWonWoSwitch;
   unsigned int seed; // TODO: yeah this is a stupid place to put this, but i'll fix it later
@@ -35,19 +35,19 @@ void sighandler(int num) {
 }
 
 void PlayGame(GameScore *score) {
-  long int correctDoor;
-  long int chosenDoor;
-  long int excludedDoor;
-  long int decision;
-  long int altDoor;
+  int correctDoor;
+  int chosenDoor;
+  int excludedDoor;
+  int decision;
+  int altDoor;
   int num;
 
   for (num=0; !killtime;num++) {
     if (verbose) printf(ZEROCURSOR);
     decision = rand_r(&score->seed)%2;
     correctDoor = rand_r(&score->seed) % 3;
-    score->percentWonWSwitch = ((float)score->numWonWSwitch / ((float)score->numWonWSwitch+score->numLostWSwitch)) * 100.0f;
-    score->percentWonWoSwitch = ((float)score->numWonWoSwitch / ((float)score->numWonWoSwitch+score->numLostWoSwitch)) * 100.0f;
+    score->percentWonWSwitch = ((double)score->numWonWSwitch / ((double)score->numWonWSwitch+(double)score->numLostWSwitch)) * 100.0f;
+    score->percentWonWoSwitch = ((double)score->numWonWoSwitch / ((double)score->numWonWoSwitch+(double)score->numLostWoSwitch)) * 100.0f;
     chosenDoor = rand_r(&score->seed) % 3;
 
     if (verbose) {
@@ -90,29 +90,29 @@ GameThread *StartGame() {
 void *MonitorThread() {
   float totalPercentWonWSwitch=0;
   float totalPercentWonWoSwitch=0;
-  unsigned int totalNumWonWSwitch=0;
-  unsigned int totalNumWonWoSwitch=0;
-  unsigned int totalNumLostWSwitch=0;
-  unsigned int totalNumLostWoSwitch=0;
-  unsigned int totalGames;
+  unsigned long long totalNumWonWSwitch=0;
+  unsigned long long totalNumWonWoSwitch=0;
+  unsigned long long totalNumLostWSwitch=0;
+  unsigned long long totalNumLostWoSwitch=0;
+  unsigned long long totalGames;
   int num;
   GameScore *score;
   while(!killtime) {
       printf(ZEROCURSOR);
       for (num=0; gameThreadTable[num] != NULL; num++) {
         score = &gameThreadTable[num]->score;
-        printf("[Thread %d] Score: (%d:%d Wins to loss \\w switch, %d:%d wins to loss \\wo switch)\n",num, score->numWonWSwitch, score->numLostWSwitch, score->numWonWoSwitch, score->numLostWoSwitch);
+        printf("[Thread %d] Score: (%llu:%llu Wins to loss \\w switch, %llu:%llu wins to loss \\wo switch)\n",num, score->numWonWSwitch, score->numLostWSwitch, score->numWonWoSwitch, score->numLostWoSwitch);
         printf("[Thread %d] Winning percentage: %.2f%% \\w switch, %.2f%% \\wo switch\n", num, score->percentWonWSwitch, score->percentWonWoSwitch); 
         totalNumWonWSwitch+=score->numWonWSwitch;
         totalNumLostWSwitch+=score->numLostWSwitch;
         totalNumWonWoSwitch+=score->numWonWoSwitch;
         totalNumLostWoSwitch+=score->numLostWoSwitch;
       }
-      totalPercentWonWSwitch = ((float)totalNumWonWSwitch / ((float)totalNumWonWSwitch+totalNumLostWSwitch)) * 100.0f;
-      totalPercentWonWoSwitch = ((float)totalNumWonWoSwitch / ((float)totalNumWonWoSwitch+totalNumLostWoSwitch)) * 100.0f;
+      totalPercentWonWSwitch = ((double)totalNumWonWSwitch / ((double)totalNumWonWSwitch+(double)totalNumLostWSwitch)) * 100.0f;
+      totalPercentWonWoSwitch = ((double)totalNumWonWoSwitch / ((double)totalNumWonWoSwitch+(double)totalNumLostWoSwitch)) * 100.0f;
       totalGames = totalNumWonWSwitch + totalNumWonWoSwitch + totalNumLostWSwitch + totalNumLostWoSwitch;
       printf("\nTotal percentages %.2f% won switching, %.2f% won without switching\n",totalPercentWonWSwitch, totalPercentWonWoSwitch);
-      printf("Total games played: %u\n",totalGames);
+      printf("Total games played: %llu\n",totalGames);
       totalNumWonWSwitch=0;
       totalNumWonWoSwitch=0;
       totalNumLostWSwitch=0;
