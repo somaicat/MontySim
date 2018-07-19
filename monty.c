@@ -3,22 +3,22 @@
 #include <signal.h>
 #include <pthread.h>
 #include <time.h>
+#include <sys/sysinfo.h>
 
 #define CLEARSCR "\033[2J"
 #define ZEROCURSOR "\033[H"
-#define CPUNUM 4 // placeholder till I have detection coded
+
 const char *ContestantChoiceStr[] = {"to stick with door", "to change to door"};
 int killtime=0;
 int verbose=0;
 int stop=0;
 typedef struct GameScore { // Might not need volatile here, ill look into it later
-  volatile int numWonWSwitch;
-  volatile int numWonWoSwitch;
-  volatile int numLostWSwitch;
-  volatile int numLostWoSwitch;
-
-  volatile float percentWonWSwitch;
-  volatile float percentWonWoSwitch;
+  int numWonWSwitch;
+  int numWonWoSwitch;
+  int numLostWSwitch;
+  int numLostWoSwitch;
+  float percentWonWSwitch;
+  float percentWonWoSwitch;
   unsigned int seed; // TODO: yeah this is a stupid place to put this, but i'll fix it later
 } GameScore;
 
@@ -87,7 +87,7 @@ GameThread *StartGame() {
   return game;
 }
 
-void *MonitorThread(void *arg) {
+void *MonitorThread() {
   float totalPercentWonWSwitch=0;
   float totalPercentWonWoSwitch=0;
   unsigned int totalNumWonWSwitch=0;
@@ -137,16 +137,17 @@ int main(int argc, int *argv[]) {
   }
 
   if (!verbose) {// no verbose, start multithreaded operation
-    for (num=0;num<CPUNUM;num++) { 
+    for (num=0;num<get_nprocs();num++) { 
       gameThreadTable[num] = StartGame();
       gameThreadTable[num]->score.seed = (unsigned int) time(NULL);
     }
-    pthread_create(&monThread, NULL, (void *)(void *) MonitorThread, NULL);
-    for (num=0;num<CPUNUM;num++) { 
+//    pthread_create(&monThread, NULL, (void *)(void *) MonitorThread, NULL);
+    MonitorThread();
+    for (num=0;num<get_nprocs();num++) { 
       pthread_join(gameThreadTable[num]->thread, 0);
       free(gameThreadTable[num]);
     }
-    pthread_join(monThread, 0);
+//    pthread_join(monThread, 0);
   }
   else {
     gameThreadTable[0] = calloc(1, sizeof(GameThread));
