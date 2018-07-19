@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <pthread.h>
+#include <unistd.h>
 #include <time.h>
 #include <sys/sysinfo.h>
 
@@ -13,6 +14,7 @@ const char *ContestantChoiceStr[] = {"to stick with door", "to change to door"};
 int killtime=0;
 int verbose=0;
 int stop=0;
+int nCpus=1;
 typedef struct GameScore { // Might not need volatile here, ill look into it later
   unsigned long long numWonWSwitch;
   unsigned long long numWonWoSwitch;
@@ -101,8 +103,8 @@ void *MonitorThread() {
       printf(ZEROCURSOR);
       for (num=0; gameThreadTable[num] != NULL; num++) {
         score = &gameThreadTable[num]->score;
-        printf("[Thread %d] Score: (%llu:%llu Wins to loss \\w switch, %llu:%llu wins to loss \\wo switch)\n",num, score->numWonWSwitch, score->numLostWSwitch, score->numWonWoSwitch, score->numLostWoSwitch);
-        printf("[Thread %d] Winning percentage: %.2f%% \\w switch, %.2f%% \\wo switch\n", num, score->percentWonWSwitch, score->percentWonWoSwitch); 
+        printf("[Thread %d] Score: %llu:%llu (%.2f%%) W:L \\w switch, %llu:%llu (%.2f%%) W:L \\wo switch\n",num, score->numWonWSwitch, score->numLostWSwitch, score->percentWonWSwitch, score->numWonWoSwitch, score->numLostWoSwitch, score->percentWonWoSwitch);
+//        printf("[Thread %d] Winning percentage: %.2f%% \\w switch, %.2f%% \\wo switch\n", num, score->percentWonWSwitch, score->percentWonWoSwitch); 
         totalNumWonWSwitch+=score->numWonWSwitch;
         totalNumLostWSwitch+=score->numLostWSwitch;
         totalNumWonWoSwitch+=score->numWonWoSwitch;
@@ -121,7 +123,7 @@ void *MonitorThread() {
   }
 }
 
-int main(int argc, int *argv[]) {
+int main(int argc, char *argv[]) {
   int num;
   pthread_t monThread;
   printf("Installing signal handler...\n");
@@ -129,20 +131,23 @@ int main(int argc, int *argv[]) {
 
   printf(CLEARSCR);
 
-  while ((num = getopt(argc, argv, "sg")) != -1) {
+  nCpus = get_nprocs();
+  while ((num = getopt(argc, argv, "sgt:")) != -1) {
     switch (num) {
       case 's': verbose=1; break;
       case 'g': stop=1; break;
+      case 't': 
+        nCpus = atoi(optarg); break;
     }
   }
 
   if (!verbose) {// no verbose, start multithreaded operation
-    for (num=0;num<get_nprocs() && num < MAXCORES ;num++) { // Is this future proofing? maybe...
+    for (num=0;num<nCpus && num < MAXCORES ;num++) { // Is this future proofing? maybe...
       gameThreadTable[num] = StartGame();
       gameThreadTable[num]->score.seed = (unsigned int) time(NULL);
     }
     MonitorThread();
-    for (num=0;num<get_nprocs() && num < MAXCORES ;num++) { // ... or maybe not.
+    for (num=0;num<nCpus && num < MAXCORES ;num++) { // ... or maybe not.
       pthread_join(gameThreadTable[num]->thread, 0);
       free(gameThreadTable[num]);
     }
