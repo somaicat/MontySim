@@ -7,6 +7,7 @@
 
 #define CLEARSCR "\033[2J"
 #define ZEROCURSOR "\033[H"
+#define MAXCORES 64 // Yeah 64 is probably too many (I think now... till iunno 30 years from now I look back and think "64? a modern cpu is measured in kilocores wtf is this?".
 
 const char *ContestantChoiceStr[] = {"to stick with door", "to change to door"};
 int killtime=0;
@@ -27,8 +28,7 @@ typedef struct GameThread {
   GameScore score;
 } GameThread;
 
-GameThread *gameThreadTable[64] = {0}; 
-
+GameThread *gameThreadTable[MAXCORES] = {0}; 
 
 void sighandler(int num) {
   killtime=1; // Using a global for now in preparation for future threading support
@@ -137,17 +137,15 @@ int main(int argc, int *argv[]) {
   }
 
   if (!verbose) {// no verbose, start multithreaded operation
-    for (num=0;num<get_nprocs();num++) { 
+    for (num=0;num<get_nprocs() && num < MAXCORES ;num++) { // Is this future proofing? maybe...
       gameThreadTable[num] = StartGame();
       gameThreadTable[num]->score.seed = (unsigned int) time(NULL);
     }
-//    pthread_create(&monThread, NULL, (void *)(void *) MonitorThread, NULL);
     MonitorThread();
-    for (num=0;num<get_nprocs();num++) { 
+    for (num=0;num<get_nprocs() && num < MAXCORES ;num++) { // ... or maybe not.
       pthread_join(gameThreadTable[num]->thread, 0);
       free(gameThreadTable[num]);
     }
-//    pthread_join(monThread, 0);
   }
   else {
     gameThreadTable[0] = calloc(1, sizeof(GameThread));
