@@ -22,7 +22,7 @@ const char *helpStr = \
 int killtime=0;
 int verbose=0;
 int stop=0;
-int nCpus=1;
+
 typedef struct GameScore { // Might not need volatile here, ill look into it later
   unsigned long long numWonWSwitch;
   unsigned long long numWonWoSwitch;
@@ -134,13 +134,16 @@ void *MonitorThread() {
 int main(int argc, char *argv[]) {
   int num;
   pthread_t monThread;
+  int nCpus = get_nprocs();
   while ((num = getopt(argc, argv, "hsgt:")) != -1) {
     switch (num) {
       case 's': verbose=1; break;
       case 'g': stop=1; break;
       case 't': 
-        nCpus = atoi(optarg); break;
-      default:
+        nCpus = atoi(optarg); 
+        if (nCpus > 0 && nCpus < MAXCORES) break; // If the argument is retarded, this conditional ensures that we won't break out of the switch and will fall through to the default and return
+        printf("%s: Thread number must be between 1 and %d\n", argv[0], MAXCORES); // Retard argument detected, falling through to return
+      default: printf("Use %s -h for more information\n", argv[0]); return 0;
       case 'h':
         printf(helpStr, argv[0]); return 0;
     }
@@ -148,8 +151,6 @@ int main(int argc, char *argv[]) {
 
   printf("Installing signal handler...\n");
   signal(SIGINT, sighandler);
-
-  nCpus = get_nprocs();
 
   printf(CLEARSCR);
 
