@@ -11,6 +11,14 @@
 #define MAXCORES 64 // Yeah 64 is probably too many (I think now... till iunno 30 years from now I look back and think "64? a modern cpu is measured in kilocores wtf is this?".
 
 const char *ContestantChoiceStr[] = {"to stick with door", "to change to door"};
+const char *helpStr = \
+		"Usage: %s [OPTION]\n"\
+		"Monty Hall game simulation\n\n"\
+		"  -t\t\tManually set number of threads to use in multithreaded mode\n"\
+		"  -s\t\tSingle threaded verbose mode\n"\
+		"  -g\t\tWait for enter at each round when in single threaded mode, no effect otherwise\n"\
+		"  -h\t\tDisplays this help informaion\n";
+
 int killtime=0;
 int verbose=0;
 int stop=0;
@@ -126,20 +134,24 @@ void *MonitorThread() {
 int main(int argc, char *argv[]) {
   int num;
   pthread_t monThread;
-  printf("Installing signal handler...\n");
-  signal(SIGINT, sighandler);
-
-  printf(CLEARSCR);
-
-  nCpus = get_nprocs();
-  while ((num = getopt(argc, argv, "sgt:")) != -1) {
+  while ((num = getopt(argc, argv, "hsgt:")) != -1) {
     switch (num) {
       case 's': verbose=1; break;
       case 'g': stop=1; break;
       case 't': 
         nCpus = atoi(optarg); break;
+      default:
+      case 'h':
+        printf(helpStr, argv[0]); return 0;
     }
   }
+
+  printf("Installing signal handler...\n");
+  signal(SIGINT, sighandler);
+
+  nCpus = get_nprocs();
+
+  printf(CLEARSCR);
 
   if (!verbose) {// no verbose, start multithreaded operation
     for (num=0;num<nCpus && num < MAXCORES ;num++) { // Is this future proofing? maybe...
