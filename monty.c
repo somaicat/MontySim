@@ -93,9 +93,14 @@ void PlayGame(GameScore *score) {
     }
 }
 
+int SeedGame(GameScore *score) {
+  score->seed = (unsigned int) time(NULL);
+}
+
 GameThread *StartGame() {
   int num;
   GameThread *game = calloc(1,sizeof(GameThread));
+  SeedGame(&game->score);
   pthread_create(&game->thread, NULL, (void *)(void *) PlayGame,(void*) &game->score);
   return game;
 }
@@ -182,7 +187,6 @@ int main(int argc, char *argv[]) {
   if (!verbose) {// no verbose, start multithreaded operation
     for (num=0;num<nCpus && num < MAXCORES ;num++) { // Is this future proofing? maybe...
       gameThreadTable[num] = StartGame();
-      gameThreadTable[num]->score.seed = (unsigned int) time(NULL);
     }
     MonitorThread();
     for (num=0;num<nCpus && num < MAXCORES ;num++) { // ... or maybe not.
