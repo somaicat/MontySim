@@ -11,10 +11,12 @@
 #define MAXCORES 64 // Yeah 64 is probably too many (I think now... till iunno 30 years from now I look back and think "64? a modern cpu is measured in kilocores wtf is this?".
 
 const char *ContestantChoiceStr[] = {"to stick with door", "to change to door"};
+const char *failStr = "Use %s -h for more information\n";
 const char *helpStr = \
 		"Usage: %s [OPTION]\n"\
 		"Monty Hall game simulation\n\n"\
 		"  -t\t\tManually set number of threads to use in multithreaded mode\n"\
+                "  -r\t\tManually set status refresh rate in ms in multithreaded mode\n"\
 		"  -s\t\tSingle threaded verbose mode\n"\
 		"  -g\t\tWait for enter at each round when in single threaded mode, no effect otherwise\n"\
 		"  -h\t\tDisplays this help informaion\n";
@@ -22,6 +24,7 @@ const char *helpStr = \
 int killtime=0;
 int verbose=0;
 int stop=0;
+int refreshRate=100;
 
 typedef struct GameScore { // Might not need volatile here, ill look into it later
   unsigned long long numWonWSwitch;
@@ -107,6 +110,11 @@ void *MonitorThread() {
   unsigned long long totalGames;
   int num;
   GameScore *score;
+  struct timespec ts;
+
+  ts.tv_sec = refreshRate/1000;
+  ts.tv_nsec = (refreshRate-(refreshRate/1000*1000))*1000000;
+
   while(!killtime) {
       printf(ZEROCURSOR);
       for (num=0; gameThreadTable[num] != NULL; num++) {
@@ -127,7 +135,7 @@ void *MonitorThread() {
       totalNumWonWoSwitch=0;
       totalNumLostWSwitch=0;
       totalNumLostWoSwitch=0;
-      usleep(300);
+      nanosleep(&ts, NULL); // Sleep main thread for refresh period
   }
 }
 
@@ -135,17 +143,34 @@ int main(int argc, char *argv[]) {
   int num;
   pthread_t monThread;
   int nCpus = get_nprocs();
-  while ((num = getopt(argc, argv, "hsgt:")) != -1) {
+  while ((num = getopt(argc, argv, "hsgr:t:")) != -1) {
     switch (num) {
-      case 's': verbose=1; break;
-      case 'g': stop=1; break;
-      case 't': 
-        nCpus = atoi(optarg); 
+      case 's':
+        verbose=1;
+        break;
+      case 'g':
+        stop=1;
+        break;
+      case 'r':
+        refreshRate = atoi(optarg);
+        if (refreshRate <= 0) {
+          printf("%s: Refresh rate must be above 0ms\n", argv[0]);
+          printf(failStr, argv[0]);
+          return 0;
+        }
+        break;
+      case 't':
+        nCpus = atoi(optarg);
         if (nCpus > 0 && nCpus < MAXCORES) break; // If the argument is retarded, this conditional ensures that we won't break out of the switch and will fall through to the default and return
         printf("%s: Thread number must be between 1 and %d\n", argv[0], MAXCORES); // Retard argument detected, falling through to return
-      default: printf("Use %s -h for more information\n", argv[0]); return 0;
+        printf(failStr, argv[0]);
+        return 0;
+      default:
+        printf(failStr, argv[0]);
+        return 0;
       case 'h':
-        printf(helpStr, argv[0]); return 0;
+        printf(helpStr, argv[0]);
+        return 0;
     }
   }
 
