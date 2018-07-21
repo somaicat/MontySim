@@ -97,10 +97,10 @@ void PlayGame(GameScore *score) {
 
 int SeedGame(GameScore *score) {
   score->seed = (unsigned int) random(); // this could probably be better
+  return 0;
 }
 
 GameThread *StartGame() {
-  int num;
   GameThread *game = calloc(1,sizeof(GameThread));
   SeedGame(&game->score);
   if (verbose)
@@ -139,7 +139,7 @@ void *MonitorThread() {
       totalPercentWonWSwitch = ((double)totalNumWonWSwitch / ((double)totalNumWonWSwitch+(double)totalNumLostWSwitch)) * 100.0f;
       totalPercentWonWoSwitch = ((double)totalNumWonWoSwitch / ((double)totalNumWonWoSwitch+(double)totalNumLostWoSwitch)) * 100.0f;
       totalGames = totalNumWonWSwitch + totalNumWonWoSwitch + totalNumLostWSwitch + totalNumLostWoSwitch;
-      printf("\nTotal percentages %.2f% won switching, %.2f% won without switching\n",totalPercentWonWSwitch, totalPercentWonWoSwitch);
+      printf("\nTotal percentages %.2f%% won switching, %.2f%% won without switching\n",totalPercentWonWSwitch, totalPercentWonWoSwitch);
       printf("Total games played: %llu\n",totalGames);
       totalNumWonWSwitch=0;
       totalNumWonWoSwitch=0;
@@ -147,11 +147,11 @@ void *MonitorThread() {
       totalNumLostWoSwitch=0;
       nanosleep(&ts, NULL); // Sleep main thread for refresh period
   }
+  return NULL;
 }
 
 int main(int argc, char *argv[]) {
   int num;
-  pthread_t monThread;
   int nCpus = get_nprocs();
   while ((num = getopt(argc, argv, "hsgar:t:")) != -1) {
     switch (num) {
@@ -207,5 +207,5 @@ int main(int argc, char *argv[]) {
     free(gameThreadTable[0]);
   }
   printf("Ending game loop.\n");
-
+  return 0;
 };
