@@ -94,7 +94,7 @@ void PlayGame(GameScore *score) {
 }
 
 int SeedGame(GameScore *score) {
-  score->seed = (unsigned int) time(NULL);
+  score->seed = (unsigned int) random(); // this could probably be better
 }
 
 GameThread *StartGame() {
