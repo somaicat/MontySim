@@ -15,6 +15,7 @@ const char *failStr = "Use %s -h for more information\n";
 const char *helpStr = \
 		"Usage: %s [OPTION]\n"\
 		"Monty Hall game simulation\n\n"\
+		"  -d\t\tDelay each game by number of ms\n"\
 		"  -t\t\tManually set number of threads to use in multithreaded mode\n"\
                 "  -r\t\tManually set status refresh rate in ms in multithreaded mode\n"\
 		"  -s\t\tSingle threaded verbose mode\n"\
@@ -27,6 +28,7 @@ int verbose=0;
 int noAnsi=0;
 int stop=0;
 int refreshRate=100;
+int gameDelay=0;
 
 typedef struct GameScore { // Might not need volatile here, ill look into it later
   unsigned long long numWonWSwitch;
@@ -56,6 +58,10 @@ void PlayGame(GameScore *score) {
   int decision;
   int altDoor;
   int num;
+  struct timespec ts;
+
+  ts.tv_sec = gameDelay/1000;
+  ts.tv_nsec = (gameDelay-(gameDelay/1000*1000))*1000000;
 
   for (num=0; !killtime;num++) {
     if (verbose && !noAnsi) printf(ZEROCURSOR);
@@ -92,6 +98,10 @@ void PlayGame(GameScore *score) {
     }
       if (stop && verbose)
         getchar(); // Need to make this a command line argument, amount various other things i need to do
+      if (gameDelay>0) {
+        nanosleep(&ts, NULL);
+        if (verbose) printf("Delaying by %dms\n", gameDelay);
+      }
     }
 }
 
@@ -153,7 +163,7 @@ void *MonitorThread() {
 int main(int argc, char *argv[]) {
   int num;
   int nCpus = get_nprocs();
-  while ((num = getopt(argc, argv, "hsgar:t:")) != -1) {
+  while ((num = getopt(argc, argv, "hsgar:t:d:")) != -1) {
     switch (num) {
       case 's':
         verbose=1;
@@ -163,6 +173,14 @@ int main(int argc, char *argv[]) {
         break;
       case 'a':
         noAnsi=1;
+        break;
+      case 'd':
+        gameDelay = atoi(optarg);
+        if (gameDelay <= 0) {
+          printf("%s: Game delay must be above 0ms\n", argv[0]);
+          printf(failStr, argv[0]);
+          return 0;
+        }
         break;
       case 'r':
         refreshRate = atoi(optarg);
