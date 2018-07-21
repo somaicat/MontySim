@@ -19,10 +19,12 @@ const char *helpStr = \
                 "  -r\t\tManually set status refresh rate in ms in multithreaded mode\n"\
 		"  -s\t\tSingle threaded verbose mode\n"\
 		"  -g\t\tWait for enter at each round when in single threaded mode, no effect otherwise\n"\
+		"  -a\t\tNo ANSI terminal controls (no effect in multithreaded mode)\t\t\n"\
 		"  -h\t\tDisplays this help informaion\n";
 
 int killtime=0;
 int verbose=0;
+int noAnsi=0;
 int stop=0;
 int refreshRate=100;
 
@@ -56,7 +58,7 @@ void PlayGame(GameScore *score) {
   int num;
 
   for (num=0; !killtime;num++) {
-    if (verbose) printf(ZEROCURSOR);
+    if (verbose && !noAnsi) printf(ZEROCURSOR);
     decision = rand_r(&score->seed)%2;
     correctDoor = rand_r(&score->seed) % 3;
     score->percentWonWSwitch = ((double)score->numWonWSwitch / ((double)score->numWonWSwitch+(double)score->numLostWSwitch)) * 100.0f;
@@ -151,13 +153,16 @@ int main(int argc, char *argv[]) {
   int num;
   pthread_t monThread;
   int nCpus = get_nprocs();
-  while ((num = getopt(argc, argv, "hsgr:t:")) != -1) {
+  while ((num = getopt(argc, argv, "hsgar:t:")) != -1) {
     switch (num) {
       case 's':
         verbose=1;
         break;
       case 'g':
         stop=1;
+        break;
+      case 'a':
+        noAnsi=1;
         break;
       case 'r':
         refreshRate = atoi(optarg);
@@ -185,7 +190,7 @@ int main(int argc, char *argv[]) {
   printf("Installing signal handler...\n");
   signal(SIGINT, sighandler);
 
-  printf(CLEARSCR);
+  if (!verbose || !noAnsi) printf(CLEARSCR);
 
   if (!verbose) {// no verbose, start multithreaded operation
     for (num=0;num<nCpus && num < MAXCORES ;num++) { // Is this future proofing? maybe...
