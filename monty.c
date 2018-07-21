@@ -64,7 +64,7 @@ void PlayGame(GameScore *score) {
     chosenDoor = rand_r(&score->seed) % 3;
 
     if (verbose) {
-      printf("Score: (%d:%d Wins to loss \\w switch, %d:%d wins to loss \\wo switch)\n", score->numWonWSwitch, score->numLostWSwitch, score->numWonWoSwitch, score->numLostWoSwitch);
+      printf("Score: (%llu:%llu Wins to loss \\w switch, %llu:%llu wins to loss \\wo switch)\n", score->numWonWSwitch, score->numLostWSwitch, score->numWonWoSwitch, score->numLostWoSwitch);
       printf("Winning percentage: %.2f%% \\w switch, %.2f%% \\wo switch\n", score->percentWonWSwitch, score->percentWonWoSwitch); 
       printf(" - Game started, (winning door is %d)\n", correctDoor);
       printf(" - Contestant chose door %d\n", chosenDoor);
@@ -101,7 +101,10 @@ GameThread *StartGame() {
   int num;
   GameThread *game = calloc(1,sizeof(GameThread));
   SeedGame(&game->score);
-  pthread_create(&game->thread, NULL, (void *)(void *) PlayGame,(void*) &game->score);
+  if (verbose)
+    PlayGame(&game->score);
+  else
+    pthread_create(&game->thread, NULL, (void *)(void *) PlayGame,(void*) &game->score);
   return game;
 }
 
@@ -195,8 +198,7 @@ int main(int argc, char *argv[]) {
     }
   }
   else {
-    gameThreadTable[0] = calloc(1, sizeof(GameThread));
-    PlayGame(&gameThreadTable[0]->score);
+    gameThreadTable[0] = StartGame();
     free(gameThreadTable[0]);
   }
   printf("Ending game loop.\n");

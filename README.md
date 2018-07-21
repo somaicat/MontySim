@@ -5,5 +5,4 @@ Normally I wouldn't bother putting something like this on something like github,
 
 
 ###### Todo:
-* Needs a fair bit of optimization, there's probably variables I don't need.
-* Need to improve how the text formatting is done
+* I should make sure there's no race condition like issues involving the monitor code and when the program closes. Specifically, the possibility that it might free the score info while the monitor code is still running. 
