@@ -194,7 +194,7 @@ int main(int argc, char *argv[]) {
     MonitorThread();
     for (num=0;num<nCpus && num < MAXCORES ;num++) { // ... or maybe not.
       pthread_join(gameThreadTable[num]->thread, 0);
-      free(gameThreadTable[num]);
+      free(gameThreadTable[num]); // Now that we've rejoined all the worker threads, free the memory.
     }
   }
   else {

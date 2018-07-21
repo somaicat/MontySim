@@ -5,4 +5,4 @@ Normally I wouldn't bother putting something like this on something like github,
 
 
 ###### Todo:
-* I should make sure there's no race condition like issues involving the monitor code and when the program closes. Specifically, the possibility that it might free the score info while the monitor code is still running. 
+
