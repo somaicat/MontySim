@@ -10,7 +10,12 @@
 #define ZEROCURSOR "\033[H"
 #define MAXCORES 64 // Yeah 64 is probably too many (I think now... till iunno 30 years from now I look back and think "64? a modern cpu is measured in kilocores wtf is this?".
 
-const char *ContestantChoiceStr[] = {"to stick with door", "to change to door"};
+// Colors
+#define C_G "\e[92m"
+#define C_R "\e[91m"
+#define C_RST "\e[m"
+
+const char *ContestantChoiceStr[] = {"\e[94mto stick with door\e[m", "\e[93mto change to door\e[m"};
 const char *failStr = "Use %s -h for more information\n";
 const char *helpStr = \
 		"Usage: %s [OPTION]\n"\
@@ -89,12 +94,12 @@ void PlayGame(GameScore *score) {
     if (correctDoor == chosenDoor) {
       if (decision) score->numWonWSwitch++;
       else score->numWonWoSwitch++;
-      if (verbose) printf(" - Contestant Won \n");
+      if (verbose) printf(" - %sContestant Won%s      \n", C_G, C_RST);
     }
     else {
       if (decision) score->numLostWSwitch++;
       else score->numLostWoSwitch++;
-      if (verbose) printf(" - Contestant Lost\n");
+      if (verbose) printf(" - %sContestant Lost%s     \n", C_R, C_RST);
     }
       if (stop && verbose)
         getchar(); // Need to make this a command line argument, amount various other things i need to do
