@@ -142,10 +142,9 @@ void *MonitorThread() {
 
   while(!killtime) {
       printf(ZEROCURSOR);
-      for (num=0; gameThreadTable[num] != NULL; num++) {
+      for (num=0; num < MAXCORES && gameThreadTable[num] != NULL; num++) {
         score = &gameThreadTable[num]->score;
-        printf("[Thread %d] Score: %llu:%llu (%.2f%%) W:L \\w switch, %llu:%llu (%.2f%%) W:L \\wo switch\n",num, score->numWonWSwitch, score->numLostWSwitch, score->percentWonWSwitch, score->numWonWoSwitch, score->numLostWoSwitch, score->percentWonWoSwitch);
-//        printf("[Thread %d] Winning percentage: %.2f%% \\w switch, %.2f%% \\wo switch\n", num, score->percentWonWSwitch, score->percentWonWoSwitch); 
+        printf("[Thread %d] Score: %llu:%llu (%.2f%%) W:L \\w switch, %llu:%llu (%.2f%%) W:L \\wo switch\n", num+1, score->numWonWSwitch, score->numLostWSwitch, score->percentWonWSwitch, score->numWonWoSwitch, score->numLostWoSwitch, score->percentWonWoSwitch);
         totalNumWonWSwitch+=score->numWonWSwitch;
         totalNumLostWSwitch+=score->numLostWSwitch;
         totalNumWonWoSwitch+=score->numWonWoSwitch;
@@ -168,6 +167,7 @@ void *MonitorThread() {
 int main(int argc, char *argv[]) {
   int num;
   int nCpus = get_nprocs();
+
   while ((num = getopt(argc, argv, "hsgar:t:d:")) != -1) {
     switch (num) {
       case 's':
@@ -197,7 +197,7 @@ int main(int argc, char *argv[]) {
         break;
       case 't':
         nCpus = atoi(optarg);
-        if (nCpus > 0 && nCpus < MAXCORES) break; // If the argument is retarded, this conditional ensures that we won't break out of the switch and will fall through to the default and return
+        if (nCpus > 0 && nCpus <= MAXCORES) break; // If the argument is retarded, this conditional ensures that we won't break out of the switch and will fall through to the default and return
         printf("%s: Thread number must be between 1 and %d\n", argv[0], MAXCORES); // Retard argument detected, falling through to return
         printf(failStr, argv[0]);
         return 0;
@@ -220,7 +220,7 @@ int main(int argc, char *argv[]) {
       gameThreadTable[num] = StartGame();
     }
     MonitorThread();
-    for (num=0;num<nCpus && num < MAXCORES ;num++) { // ... or maybe not.
+    for (num=0;num<nCpus && num < MAXCORES ;num++) { // ... or maybe not. 
       pthread_join(gameThreadTable[num]->thread, 0);
       free(gameThreadTable[num]); // Now that we've rejoined all the worker threads, free the memory.
     }
