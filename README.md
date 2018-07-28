@@ -6,4 +6,4 @@ Normally I wouldn't bother putting something like this on something like github,
 
 ###### Todo:
 Add argument for total number of games allowed to play.
-Add argument for increased decimal points displayed.
+Add argument for total amount of time to play? 

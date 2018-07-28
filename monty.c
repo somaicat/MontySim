@@ -20,6 +20,7 @@ const char *failStr = "Use %s -h for more information\n";
 const char *helpStr = \
 		"Usage: %s [OPTION]\n"\
 		"Monty Hall game simulation\n\n"\
+		"  -p\t\tSpecify number of decimal points displayed (between 2 and 10)\n"\
 		"  -d\t\tDelay each game by number of ms\n"\
 		"  -t\t\tManually set number of threads to use in multithreaded mode\n"\
                 "  -r\t\tManually set status refresh rate in ms in multithreaded mode\n"\
@@ -34,8 +35,9 @@ int noAnsi=0;
 int stop=0;
 int refreshRate=100;
 int gameDelay=0;
+int numDecPoints=2;
 
-typedef struct GameScore { // Might not need volatile here, ill look into it later
+typedef struct GameScore { 
   unsigned long long numWonWSwitch;
   unsigned long long numWonWoSwitch;
   unsigned long long numLostWSwitch;
@@ -66,7 +68,7 @@ void PlayGame(GameScore *score) {
   struct timespec ts;
 
   ts.tv_sec = gameDelay/1000;
-  ts.tv_nsec = (gameDelay-(gameDelay/1000*1000))*1000000;
+  ts.tv_nsec = (gameDelay-(gameDelay/1000*1000))*1000000; // This works by first taking the delay, say.. 1500, it divides and multiplies by 1000, which since C rounds down and this is an integer, just drops it to the nearest 1000. Then it uses that to subtract from the original number  (1500-1000) to get 500, and then multiplies to get nanoseconds, probably a better way to do this.
 
   for (num=0; !killtime;num++) {
     if (verbose && !noAnsi) printf(ZEROCURSOR);
@@ -78,7 +80,7 @@ void PlayGame(GameScore *score) {
 
     if (verbose) {
       printf("Score: (%llu:%llu Wins to loss \\w switch, %llu:%llu wins to loss \\wo switch)\n", score->numWonWSwitch, score->numLostWSwitch, score->numWonWoSwitch, score->numLostWoSwitch);
-      printf("Winning percentage: %.2f%% \\w switch, %.2f%% \\wo switch\n", score->percentWonWSwitch, score->percentWonWoSwitch); 
+      printf("Winning percentage: %.*f%% \\w switch, %.*f%% \\wo switch\n", numDecPoints, score->percentWonWSwitch, numDecPoints, score->percentWonWoSwitch); 
       printf(" - Game started, (winning door is %d)\n", correctDoor);
       printf(" - Contestant chose door %d\n", chosenDoor);
     }
@@ -144,7 +146,7 @@ void *MonitorThread() {
       printf(ZEROCURSOR);
       for (num=0; num < MAXCORES && gameThreadTable[num] != NULL; num++) {
         score = &gameThreadTable[num]->score;
-        printf("[Thread %d] Score: %llu:%llu (%.2f%%) W:L \\w switch, %llu:%llu (%.2f%%) W:L \\wo switch\n", num+1, score->numWonWSwitch, score->numLostWSwitch, score->percentWonWSwitch, score->numWonWoSwitch, score->numLostWoSwitch, score->percentWonWoSwitch);
+        printf("[Thread %d] Score: %llu:%llu (%.*f%%) W:L \\w switch, %llu:%llu (%.*f%%) W:L \\wo switch\n", num+1, score->numWonWSwitch, score->numLostWSwitch, numDecPoints, score->percentWonWSwitch, score->numWonWoSwitch, score->numLostWoSwitch, numDecPoints, score->percentWonWoSwitch);
         totalNumWonWSwitch+=score->numWonWSwitch;
         totalNumLostWSwitch+=score->numLostWSwitch;
         totalNumWonWoSwitch+=score->numWonWoSwitch;
@@ -153,7 +155,7 @@ void *MonitorThread() {
       totalPercentWonWSwitch = ((double)totalNumWonWSwitch / ((double)totalNumWonWSwitch+(double)totalNumLostWSwitch)) * 100.0f;
       totalPercentWonWoSwitch = ((double)totalNumWonWoSwitch / ((double)totalNumWonWoSwitch+(double)totalNumLostWoSwitch)) * 100.0f;
       totalGames = totalNumWonWSwitch + totalNumWonWoSwitch + totalNumLostWSwitch + totalNumLostWoSwitch;
-      printf("\nTotal percentages %.2f%% won switching, %.2f%% won without switching\n",totalPercentWonWSwitch, totalPercentWonWoSwitch);
+      printf("\nTotal percentages %.*f%% won switching, %.*f%% won without switching\n", numDecPoints,totalPercentWonWSwitch, numDecPoints, totalPercentWonWoSwitch);
       printf("Total games played: %llu\n",totalGames);
       totalNumWonWSwitch=0;
       totalNumWonWoSwitch=0;
@@ -168,13 +170,21 @@ int main(int argc, char *argv[]) {
   int num;
   int nCpus = get_nprocs();
 
-  while ((num = getopt(argc, argv, "hsgar:t:d:")) != -1) {
+  while ((num = getopt(argc, argv, "hsgap:r:t:d:")) != -1) {
     switch (num) {
       case 's':
         verbose=1;
         break;
       case 'g':
         stop=1;
+        break;
+      case 'p':
+        numDecPoints = atoi(optarg);
+        if (numDecPoints > 10) {
+          printf("%s: Decimal points must be between 2 and 10\n", argv[0]);
+          printf(failStr, argv[0]);
+          return 0;
+        }
         break;
       case 'a':
         noAnsi=1;
