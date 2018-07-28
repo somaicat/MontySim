@@ -1,61 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <pthread.h>
-#include <unistd.h>
-#include <time.h>
-#include <sys/sysinfo.h>
-
-#define CLEARSCR "\033[2J"
-#define ZEROCURSOR "\033[H"
-#define MAXCORES 64 // Yeah 64 is probably too many (I think now... till iunno 30 years from now I look back and think "64? a modern cpu is measured in kilocores wtf is this?".
-
-// Colors
-#define C_G "\e[92m"
-#define C_R "\e[91m"
-#define C_RST "\e[m"
-
-const char *ContestantChoiceStr[] = {"\e[94mto stick with door\e[m", "\e[93mto change to door\e[m"};
-const char *failStr = "Use %s -h for more information\n";
-const char *helpStr = \
-		"Usage: %s [OPTION]\n"\
-		"Monty Hall game simulation\n\n"\
-		"  -p\t\tSpecify number of decimal points displayed (between 2 and 10)\n"\
-		"  -d\t\tDelay each game by number of ms\n"\
-		"  -t\t\tManually set number of threads to use in multithreaded mode\n"\
-                "  -r\t\tManually set status refresh rate in ms in multithreaded mode\n"\
-		"  -s\t\tSingle threaded verbose mode\n"\
-		"  -g\t\tWait for enter at each round when in single threaded mode, no effect otherwise\n"\
-		"  -a\t\tNo ANSI terminal controls (no effect in multithreaded mode)\t\t\n"\
-		"  -h\t\tDisplays this help informaion\n";
-
-int killtime=0;
-int verbose=0;
-int noAnsi=0;
-int stop=0;
-int refreshRate=100;
-int gameDelay=0;
-int numDecPoints=2;
-
-typedef struct GameScore { 
-  unsigned long long numWonWSwitch;
-  unsigned long long numWonWoSwitch;
-  unsigned long long numLostWSwitch;
-  unsigned long long numLostWoSwitch;
-  float percentWonWSwitch;
-  float percentWonWoSwitch;
-  unsigned int seed; // TODO: yeah this is a stupid place to put this, but i'll fix it later
-} GameScore;
-
-typedef struct GameThread {
-  pthread_t thread;
-  GameScore score;
-} GameThread;
-
-GameThread *gameThreadTable[MAXCORES] = {0}; 
+#include "monty.h"
 
 void sighandler(int num) {
-  killtime=1; // Using a global for now in preparation for future threading support
+  killtime=num; // Using a global for now in preparation for future threading support
 }
 
 void PlayGame(GameScore *score) {
@@ -170,7 +116,7 @@ int main(int argc, char *argv[]) {
   int num;
   int nCpus = get_nprocs();
 
-  while ((num = getopt(argc, argv, "hsgap:r:t:d:")) != -1) {
+  while ((num = getopt(argc, argv, "hsgap:r:t:d:T:")) != -1) {
     switch (num) {
       case 's':
         verbose=1;
@@ -178,11 +124,19 @@ int main(int argc, char *argv[]) {
       case 'g':
         stop=1;
         break;
+      case 'T':
+        if (atoi(optarg) <= 0) {
+          printf("%s: Time limit must be 1 second or more\n", argv[0]);
+          ERRORSTR(argv[0]);
+          return 0;
+        }
+        alarm(atoi(optarg));
+        break;
       case 'p':
         numDecPoints = atoi(optarg);
         if (numDecPoints > 10) {
           printf("%s: Decimal points must be between 2 and 10\n", argv[0]);
-          printf(failStr, argv[0]);
+          ERRORSTR(argv[0]);
           return 0;
         }
         break;
@@ -193,7 +147,7 @@ int main(int argc, char *argv[]) {
         gameDelay = atoi(optarg);
         if (gameDelay <= 0) {
           printf("%s: Game delay must be above 0ms\n", argv[0]);
-          printf(failStr, argv[0]);
+          ERRORSTR(argv[0]);
           return 0;
         }
         break;
@@ -201,7 +155,7 @@ int main(int argc, char *argv[]) {
         refreshRate = atoi(optarg);
         if (refreshRate <= 0) {
           printf("%s: Refresh rate must be above 0ms\n", argv[0]);
-          printf(failStr, argv[0]);
+          ERRORSTR(argv[0]);
           return 0;
         }
         break;
@@ -209,19 +163,20 @@ int main(int argc, char *argv[]) {
         nCpus = atoi(optarg);
         if (nCpus > 0 && nCpus <= MAXCORES) break; // If the argument is retarded, this conditional ensures that we won't break out of the switch and will fall through to the default and return
         printf("%s: Thread number must be between 1 and %d\n", argv[0], MAXCORES); // Retard argument detected, falling through to return
-        printf(failStr, argv[0]);
+        ERRORSTR(argv[0]);
         return 0;
       default:
-        printf(failStr, argv[0]);
+        ERRORSTR(argv[0]);
         return 0;
       case 'h':
-        printf(helpStr, argv[0]);
+        ERRORSTR(argv[0]);
         return 0;
     }
   }
 
   printf("Installing signal handler...\n");
   signal(SIGINT, sighandler);
+  signal(SIGALRM, sighandler);
 
   if (!verbose || !noAnsi) printf(CLEARSCR);
 
@@ -239,6 +194,7 @@ int main(int argc, char *argv[]) {
     gameThreadTable[0] = StartGame();
     free(gameThreadTable[0]);
   }
-  printf("Ending game loop.\n");
+  if (killtime == SIGALRM) printf("Timeout was reached\n");
+  printf("%sEnding game loop.\n", SETCURSORLEFT);
   return 0;
 };
