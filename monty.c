@@ -128,18 +128,14 @@ int main(int argc, char *argv[]) {
         break;
       case 'T':
         if (atoi(optarg) <= 0) {
-          printf("%s: Time limit must be 1 second or more\n", argv[0]);
-          ERRORSTR(argv[0]);
-          return 0;
+          ERRORRET(argv[0], "Time limit must be 1 second or more");
         }
         alarm(atoi(optarg));
         break;
       case 'p':
         numDecPoints = atoi(optarg);
-        if (numDecPoints > 10) {
-          printf("%s: Decimal points must be between 2 and 10\n", argv[0]);
-          ERRORSTR(argv[0]);
-          return 0;
+        if (numDecPoints > 10 || numDecPoints < 2) {
+          ERRORRET(argv[0], "Decimal points must be between 2 and 10");
         }
         break;
       case 'a':
@@ -148,17 +144,13 @@ int main(int argc, char *argv[]) {
       case 'd':
         gameDelay = atoi(optarg);
         if (gameDelay <= 0) {
-          printf("%s: Game delay must be above 0ms\n", argv[0]);
-          ERRORSTR(argv[0]);
-          return 0;
+          ERRORRET(argv[0], "Game delay must be above 0ms");
         }
         break;
       case 'r':
         refreshRate = atoi(optarg);
         if (refreshRate <= 0) {
-          printf("%s: Refresh rate must be above 0ms\n", argv[0]);
-          ERRORSTR(argv[0]);
-          return 0;
+          ERRORRET(argv[0], "Refresh rate must be above 0ms");
         }
         break;
       case 't':
@@ -171,7 +163,7 @@ int main(int argc, char *argv[]) {
         ERRORSTR(argv[0]);
         return 0;
       case 'h':
-        ERRORSTR(argv[0]);
+        printf(helpStr, argv[0]);
         return 0;
     }
   }

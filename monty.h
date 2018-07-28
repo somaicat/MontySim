@@ -6,8 +6,8 @@
 #include <time.h>
 #include <sys/sysinfo.h>
 
-#define ERRORSTR(s) printf(failStr, s);
-
+#define ERRORSTR(s) printf(failStr, s)
+#define ERRORRET(t, s) printf("%s: %s\n", t, s); ERRORSTR(t); return 0
 
 #define CLEARSCR "\033[2J"
 #define ZEROCURSOR "\033[H"
