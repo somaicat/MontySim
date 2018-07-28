@@ -4,7 +4,7 @@ void sighandler(int num) {
   killtime=num; // Using a global for now in preparation for future threading support
 }
 
-void PlayGame(GameScore *score) {
+void PlayGame(GameThread *game) {
   int correctDoor;
   int chosenDoor;
   int excludedDoor;
@@ -13,16 +13,18 @@ void PlayGame(GameScore *score) {
   int num;
   struct timespec ts;
 
+  GameScore *score = &game->score;
+
   ts.tv_sec = gameDelay/1000;
   ts.tv_nsec = (gameDelay-(gameDelay/1000*1000))*1000000; // This works by first taking the delay, say.. 1500, it divides and multiplies by 1000, which since C rounds down and this is an integer, just drops it to the nearest 1000. Then it uses that to subtract from the original number  (1500-1000) to get 500, and then multiplies to get nanoseconds, probably a better way to do this.
 
   for (num=0; !killtime;num++) {
     if (verbose && !noAnsi) printf(ZEROCURSOR);
-    decision = rand_r(&score->seed)%2;
-    correctDoor = rand_r(&score->seed) % 3;
+    decision = rand_r(&game->seed)%2;
+    correctDoor = rand_r(&game->seed) % 3;
     score->percentWonWSwitch = ((double)score->numWonWSwitch / ((double)score->numWonWSwitch+(double)score->numLostWSwitch)) * 100.0f;
     score->percentWonWoSwitch = ((double)score->numWonWoSwitch / ((double)score->numWonWoSwitch+(double)score->numLostWoSwitch)) * 100.0f;
-    chosenDoor = rand_r(&score->seed) % 3;
+    chosenDoor = rand_r(&game->seed) % 3;
 
     if (verbose) {
       printf("Score: (%llu:%llu Wins to loss \\w switch, %llu:%llu wins to loss \\wo switch)\n", score->numWonWSwitch, score->numLostWSwitch, score->numWonWoSwitch, score->numLostWoSwitch);
@@ -58,18 +60,18 @@ void PlayGame(GameScore *score) {
     }
 }
 
-int SeedGame(GameScore *score) {
-  score->seed = (unsigned int) random(); // this could probably be better
+int SeedGame(GameThread *game) {
+  game->seed = (unsigned int) random(); // this could probably be better
   return 0;
 }
 
 GameThread *StartGame() {
   GameThread *game = calloc(1,sizeof(GameThread));
-  SeedGame(&game->score);
+  SeedGame(game);
   if (verbose)
-    PlayGame(&game->score);
+    PlayGame(game);
   else
-    pthread_create(&game->thread, NULL, (void *)(void *) PlayGame,(void*) &game->score);
+    pthread_create(&game->thread, NULL, (void *)(void *) PlayGame,(void*) game);
   return game;
 }
 

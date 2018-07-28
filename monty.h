@@ -53,12 +53,12 @@ typedef struct GameScore {
   unsigned long long numLostWoSwitch;
   float percentWonWSwitch;
   float percentWonWoSwitch;
-  unsigned int seed; // TODO: yeah this is a stupid place to put this, but i'll fix it later
 } GameScore;
 
 typedef struct GameThread {
   pthread_t thread;
   GameScore score;
+  unsigned int seed; 
 } GameThread;
 
 // Global Thread Table
