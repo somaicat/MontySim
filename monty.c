@@ -20,11 +20,13 @@ void PlayGame(GameThread *game) {
 
   for (num=0; !killtime;num++) {
     if (verbose && !noAnsi) printf(ZEROCURSOR);
-    decision = rand_r(&game->seed)%2;
-    correctDoor = rand_r(&game->seed) % 3;
+    decision = rand_r(&game->seed) / (RAND_MAX / 2+1); 
+    correctDoor = rand_r(&game->seed) / (RAND_MAX / 3+1);
+
     score->percentWonWSwitch = ((double)score->numWonWSwitch / ((double)score->numWonWSwitch+(double)score->numLostWSwitch)) * 100.0f;
     score->percentWonWoSwitch = ((double)score->numWonWoSwitch / ((double)score->numWonWoSwitch+(double)score->numLostWoSwitch)) * 100.0f;
-    chosenDoor = rand_r(&game->seed) % 3;
+    chosenDoor = rand_r(&game->seed) / (RAND_MAX / 3+1);
+
 
     if (verbose) {
       printf("Score: (%llu:%llu Wins to loss \\w switch, %llu:%llu wins to loss \\wo switch)\n", score->numWonWSwitch, score->numLostWSwitch, score->numWonWoSwitch, score->numLostWoSwitch);
