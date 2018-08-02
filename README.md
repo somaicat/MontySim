@@ -6,4 +6,5 @@ Normally I wouldn't bother putting something like this on something like github,
 
 ###### Todo:
 Add argument for total number of games allowed to play.
-Add argument for total amount of time to play? 
+Display how long the simulation has been running.
+Solve the bias in +1billion runs of the simulation. If it's too ineffecient to do so, perhaps provide an option of PRNG algorithms to use
