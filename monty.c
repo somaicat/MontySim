@@ -1,5 +1,5 @@
 #include "monty.h"
-char *bgColor = C_RST;
+char *bgColor = C_DOSBG;
 void sighandler(int sig) {
   killtime=sig; // Using a global for now in preparation for future threading support
 }
@@ -134,7 +134,7 @@ int main(int argc, char *argv[]) {
   int nCpus = get_nprocs();
   struct sigaction sigAct;
   char *localeStr = NULL;
-  while ((num = getopt(argc, argv, "hsSgap:r:t:d:T:")) != -1) {
+  while ((num = getopt(argc, argv, "hsSgaAp:r:t:d:T:")) != -1) {
     switch (num) {
       case 's':
         verbose=1;
@@ -159,6 +159,9 @@ int main(int argc, char *argv[]) {
         break;
       case 'a':
         noAnsi=1;
+        break;
+      case 'A':
+        bgColor = C_RST; 
         break;
       case 'd':
         gameDelay = atoi(optarg);
@@ -193,8 +196,8 @@ int main(int argc, char *argv[]) {
   sigaction(SIGINT, &sigAct, NULL);
   sigaction(SIGALRM, &sigAct, NULL);
   if (localeStr) printf("Setting locale to %s\n", localeStr);
-  bgColor = C_DOSBG;
-  if (!verbose || !noAnsi) printf("%s%s", bgColor, CLEARSCR);
+
+  printf("%s%s", bgColor, CLEARSCR);
 
   if (!verbose) {// no verbose, start multithreaded operation
     for (num=0;num<nCpus && num < MAXCORES ;num++) { // Is this future proofing? maybe...
@@ -206,7 +209,8 @@ int main(int argc, char *argv[]) {
       free(gameThreadTable[num]); // Now that we've rejoined all the worker threads, free the memory.
     }
   }
-  else {
+  else { // We're gonna run single threaded (slow) mode
+    bgColor = C_RST;
     gameThreadTable[0] = StartGame();
     free(gameThreadTable[0]);
   }

@@ -27,7 +27,6 @@
 #define C_DOSFG "\e[31;47m"
 
 // Constant strings
-extern char *bgColor;
 const char *ContestantChoiceStr[] = {"\e[94mto stick with door\e[m", "\e[93mto change to door\e[m"};
 const char *failStr = "Use %s -h for more information\n";
 const char *helpStr = \
@@ -41,10 +40,11 @@ const char *helpStr = \
 		"  -s\t\tSingle threaded verbose mode\n"\
 		"  -S\t\tShow thousands seperators\n"\
 		"  -g\t\tWait for enter at each round when in single threaded mode, no effect otherwise\n"\
-		"  -a\t\tNo ANSI cursor controls, show ALL games (no effect in multithreaded mode)\t\t\n"\
+		"  -a\t\tNo ANSI cursor controls, show ALL games (no effect in multithreaded mode)\n"\
+		"  -A\t\tNo ANSI background colors (foreground colors still exist if supported, no effect in singlethreaded)\n"\
 		"  -h\t\tDisplays this help informaion\n";
 
-// Globals
+// Globals //Note: This will need modification if we ever switch to more code files.
 int killtime=0;
 int verbose=0;
 int noAnsi=0;
@@ -52,6 +52,7 @@ int stop=0;
 int refreshRate=100;
 int gameDelay=0;
 int numDecPoints=2;
+char *bgColor;
 
 // Structures
 typedef struct GameScore { 
