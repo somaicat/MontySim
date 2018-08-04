@@ -88,12 +88,20 @@ void *MonitorThread() {
   int num;
   GameScore *score;
   struct timespec ts;
-
+  time_t startTime = time(NULL);
+  int secondsPast;
+  int rt_Hours, rt_Minutes, rt_Seconds;
   ts.tv_sec = refreshRate/1000;
   ts.tv_nsec = (refreshRate-(refreshRate/1000*1000))*1000000;
+  int stopLoop=0;
 
-  while(!killtime) {
+  while(!stopLoop) {
       printf(ZEROCURSOR);
+      secondsPast = time(NULL) - startTime;
+      rt_Hours = secondsPast / 3600;
+      rt_Minutes = (secondsPast % 3600) / 60;
+      rt_Seconds = secondsPast % 60;
+      printf("%s------ [%d:%d:%d] -----%s\n", (stopLoop = killtime) ? C_R : C_G, rt_Hours, rt_Minutes, rt_Seconds, C_RST); // NOTE: Since the use of the ternary conditional here could very easily be misunderstood, please note that it is CORRECT that there is only one '=' symbol, not two. It is intended that it FIRST set killtime to stopLoop, THEN evaluating it. This is NOT a typo.
       for (num=0; num < MAXCORES && gameThreadTable[num] != NULL; num++) {
         score = &gameThreadTable[num]->score;
         printf("[Thread %d] Score: %llu:%llu (%.*f%%) W:L \\w switch, %llu:%llu (%.*f%%) W:L \\wo switch\n", num+1, score->numWonWSwitch, score->numLostWSwitch, numDecPoints, score->percentWonWSwitch, score->numWonWoSwitch, score->numLostWoSwitch, numDecPoints, score->percentWonWoSwitch);
@@ -119,6 +127,7 @@ void *MonitorThread() {
 int main(int argc, char *argv[]) {
   int num;
   int nCpus = get_nprocs();
+  struct sigaction sigAct = {0};
 
   while ((num = getopt(argc, argv, "hsgap:r:t:d:T:")) != -1) {
     switch (num) {
@@ -170,9 +179,10 @@ int main(int argc, char *argv[]) {
     }
   }
 
+  sigAct.sa_handler = sighandler;
   printf("Installing signal handler...\n");
-  signal(SIGINT, sighandler);
-  signal(SIGALRM, sighandler);
+  sigaction(SIGINT, &sigAct, NULL);
+  sigaction(SIGALRM, &sigAct, NULL);
 
   if (!verbose || !noAnsi) printf(CLEARSCR);
 
