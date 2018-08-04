@@ -1,5 +1,5 @@
 #include "monty.h"
-
+char *bgColor = C_RST;
 void sighandler(int sig) {
   killtime=sig; // Using a global for now in preparation for future threading support
 }
@@ -46,12 +46,12 @@ void PlayGame(GameThread *game) {
     if (correctDoor == chosenDoor) {
       if (decision) score->numWonWSwitch++;
       else score->numWonWoSwitch++;
-      if (verbose) printf(" - %sContestant Won%s      \n", C_G, C_RST);
+      if (verbose) printf(" - %sContestant Won%s      \n", C_G, bgColor);
     }
     else {
       if (decision) score->numLostWSwitch++;
       else score->numLostWoSwitch++;
-      if (verbose) printf(" - %sContestant Lost%s     \n", C_R, C_RST);
+      if (verbose) printf(" - %sContestant Lost%s     \n", C_R, bgColor);
     }
       if (stop && verbose)
         getchar(); // Need to make this a command line argument, amount various other things i need to do
@@ -101,10 +101,10 @@ void *MonitorThread() {
       rt_Hours = secondsPast / 3600;
       rt_Minutes = (secondsPast % 3600) / 60;
       rt_Seconds = secondsPast % 60;
-      printf("%s------ [%d:%d:%d] -----%s\n", (stopLoop = killtime) ? C_R : C_G, rt_Hours, rt_Minutes, rt_Seconds, C_RST); // NOTE: Since the use of the ternary conditional here could very easily be misunderstood, please note that it is CORRECT that there is only one '=' symbol, not two. It is intended that it FIRST set killtime to stopLoop, THEN evaluating it. This is NOT a typo.
+      printf("%s------ [%d:%d:%d] -----%s\n", (stopLoop = killtime) ? C_R : C_G, rt_Hours, rt_Minutes, rt_Seconds, bgColor); // NOTE: Since the use of the ternary conditional here could very easily be misunderstood, please note that it is CORRECT that there is only one '=' symbol, not two. It is intended that it FIRST set killtime to stopLoop, THEN evaluating it. This is NOT a typo.
       for (num=0; num < MAXCORES && gameThreadTable[num] != NULL; num++) {
         score = &gameThreadTable[num]->score;
-        printf("[Thread %d] Score: %'llu:%'llu (%.*f%%) W:L \\w switch, %'llu:%'llu (%.*f%%) W:L \\wo switch\n", num+1, score->numWonWSwitch, score->numLostWSwitch, numDecPoints, score->percentWonWSwitch, score->numWonWoSwitch, score->numLostWoSwitch, numDecPoints, score->percentWonWoSwitch);
+        printf("[Thread %d] Score: %'llu : %'llu (%.*f%%) W:L \\w switch, %'llu : %'llu (%.*f%%) W:L \\wo switch\n", num+1, score->numWonWSwitch, score->numLostWSwitch, numDecPoints, score->percentWonWSwitch, score->numWonWoSwitch, score->numLostWoSwitch, numDecPoints, score->percentWonWoSwitch);
         totalNumWonWSwitch+=score->numWonWSwitch;
         totalNumLostWSwitch+=score->numLostWSwitch;
         totalNumWonWoSwitch+=score->numWonWoSwitch;
@@ -188,8 +188,8 @@ int main(int argc, char *argv[]) {
   sigaction(SIGINT, &sigAct, NULL);
   sigaction(SIGALRM, &sigAct, NULL);
   if (localeStr) printf("Setting locale to %s\n", localeStr);
-
-  if (!verbose || !noAnsi) printf(CLEARSCR);
+//  bgColor = C_DOSBG;
+  if (!verbose || !noAnsi) printf("%s%s", bgColor, CLEARSCR);
 
   if (!verbose) {// no verbose, start multithreaded operation
     for (num=0;num<nCpus && num < MAXCORES ;num++) { // Is this future proofing? maybe...
@@ -206,6 +206,7 @@ int main(int argc, char *argv[]) {
     free(gameThreadTable[0]);
   }
   if (killtime == SIGALRM) printf("Timeout was reached\n");
+  if (bgColor == C_DOSBG) printf("%s%s", C_RST, CLEARSCR);
   printf("%sEnding game loop.\n", SETCURSORLEFT);
   return 0;
 };

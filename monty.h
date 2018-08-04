@@ -21,8 +21,12 @@
 #define C_G "\e[92m"
 #define C_R "\e[91m"
 #define C_RST "\e[m"
+#define C_WBG "\e[30;47m"
+#define C_DOSBG "\e[1;37;44m"
+#define C_DOSFG "\e[31;47m"
 
 // Constant strings
+extern char *bgColor;
 const char *ContestantChoiceStr[] = {"\e[94mto stick with door\e[m", "\e[93mto change to door\e[m"};
 const char *failStr = "Use %s -h for more information\n";
 const char *helpStr = \
