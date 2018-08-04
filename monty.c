@@ -1,7 +1,7 @@
 #include "monty.h"
 
-void sighandler(int num) {
-  killtime=num; // Using a global for now in preparation for future threading support
+void sighandler(int sig) {
+  killtime=sig; // Using a global for now in preparation for future threading support
 }
 
 void PlayGame(GameThread *game) {
@@ -56,8 +56,8 @@ void PlayGame(GameThread *game) {
       if (stop && verbose)
         getchar(); // Need to make this a command line argument, amount various other things i need to do
       if (gameDelay>0) {
-        nanosleep(&ts, NULL);
         if (verbose) printf("Delaying by %dms\n", gameDelay);
+        nanosleep(&ts, NULL);
       }
     }
 }
