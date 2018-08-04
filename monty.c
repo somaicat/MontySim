@@ -96,6 +96,7 @@ void *MonitorThread() {
   int stopLoop=0;
 
   while(!stopLoop) {
+      if (killtime && bgColor == C_DOSBG) printf("%s%s",(bgColor=C_RST),CLEARSCR);
       printf(ZEROCURSOR);
       secondsPast = time(NULL) - startTime;
       rt_Hours = secondsPast / 3600;
@@ -105,8 +106,10 @@ void *MonitorThread() {
       for (num=0; num < MAXCORES && gameThreadTable[num] != NULL; num++) {
         score = &gameThreadTable[num]->score;
         printf("[Thread %d]\n", num+1);
-        printf("Switching:\tWins %'llu : %'llu Loses (%.*f%%)\n", score->numWonWSwitch, score->numLostWSwitch, numDecPoints, score->percentWonWSwitch);
-        printf("Not Switching:\tWins %'llu : %'llu Loses (%.*f%%)\n", score->numWonWoSwitch, score->numLostWoSwitch, numDecPoints, score->percentWonWoSwitch);
+        printf("%s", CLEARLINE);
+        printf("Switching:\tWins %'llu\tLoses %'llu\t(%.*f%%)\n", score->numWonWSwitch, score->numLostWSwitch, numDecPoints, score->percentWonWSwitch);
+        printf("%s", CLEARLINE);
+        printf("Not Switching:\tWins %'llu\tLoses %'llu\t(%.*f%%)\n", score->numWonWoSwitch, score->numLostWoSwitch, numDecPoints, score->percentWonWoSwitch);
         totalNumWonWSwitch+=score->numWonWSwitch;
         totalNumLostWSwitch+=score->numLostWSwitch;
         totalNumWonWoSwitch+=score->numWonWoSwitch;
@@ -208,7 +211,6 @@ int main(int argc, char *argv[]) {
     free(gameThreadTable[0]);
   }
   if (killtime == SIGALRM) printf("Timeout was reached\n");
-  if (bgColor == C_DOSBG) printf("%s%s", C_RST, CLEARSCR);
   printf("%sEnding game loop.\n", SETCURSORLEFT);
   return 0;
 };
