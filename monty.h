@@ -34,7 +34,7 @@ const char *helpStr = \
                 "  -r\t\tManually set status refresh rate in ms in multithreaded mode\n"\
 		"  -s\t\tSingle threaded verbose mode\n"\
 		"  -g\t\tWait for enter at each round when in single threaded mode, no effect otherwise\n"\
-		"  -a\t\tNo ANSI terminal controls (no effect in multithreaded mode)\t\t\n"\
+		"  -a\t\tNo ANSI cursor controls, show ALL games (no effect in multithreaded mode)\t\t\n"\
 		"  -h\t\tDisplays this help informaion\n";
 
 // Globals
