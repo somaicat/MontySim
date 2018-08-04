@@ -6,6 +6,7 @@
 #include <time.h>
 #include <sys/sysinfo.h>
 #include <string.h>
+#include <locale.h>
 
 #define ERRORSTR(s) printf(failStr, s)
 #define ERRORRET(t, s) printf("%s: %s\n", t, s); ERRORSTR(t); return 0
@@ -33,6 +34,7 @@ const char *helpStr = \
 		"  -T\t\tStop games after number of seconds\n"\
                 "  -r\t\tManually set status refresh rate in ms in multithreaded mode\n"\
 		"  -s\t\tSingle threaded verbose mode\n"\
+		"  -S\t\tShow thousands seperators\n"\
 		"  -g\t\tWait for enter at each round when in single threaded mode, no effect otherwise\n"\
 		"  -a\t\tNo ANSI cursor controls, show ALL games (no effect in multithreaded mode)\t\t\n"\
 		"  -h\t\tDisplays this help informaion\n";

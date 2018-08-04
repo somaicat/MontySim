@@ -29,7 +29,7 @@ void PlayGame(GameThread *game) {
 
 
     if (verbose) {
-      printf("Score: (%llu:%llu Wins to loss \\w switch, %llu:%llu wins to loss \\wo switch)\n", score->numWonWSwitch, score->numLostWSwitch, score->numWonWoSwitch, score->numLostWoSwitch);
+      printf("Score: (%'llu:%'llu Wins to loss \\w switch, %'llu:%'llu wins to loss \\wo switch)\n", score->numWonWSwitch, score->numLostWSwitch, score->numWonWoSwitch, score->numLostWoSwitch);
       printf("Winning percentage: %.*f%% \\w switch, %.*f%% \\wo switch\n", numDecPoints, score->percentWonWSwitch, numDecPoints, score->percentWonWoSwitch); 
       printf(" - Game started, (winning door is %d)\n", correctDoor);
       printf(" - Contestant chose door %d\n", chosenDoor);
@@ -104,7 +104,7 @@ void *MonitorThread() {
       printf("%s------ [%d:%d:%d] -----%s\n", (stopLoop = killtime) ? C_R : C_G, rt_Hours, rt_Minutes, rt_Seconds, C_RST); // NOTE: Since the use of the ternary conditional here could very easily be misunderstood, please note that it is CORRECT that there is only one '=' symbol, not two. It is intended that it FIRST set killtime to stopLoop, THEN evaluating it. This is NOT a typo.
       for (num=0; num < MAXCORES && gameThreadTable[num] != NULL; num++) {
         score = &gameThreadTable[num]->score;
-        printf("[Thread %d] Score: %llu:%llu (%.*f%%) W:L \\w switch, %llu:%llu (%.*f%%) W:L \\wo switch\n", num+1, score->numWonWSwitch, score->numLostWSwitch, numDecPoints, score->percentWonWSwitch, score->numWonWoSwitch, score->numLostWoSwitch, numDecPoints, score->percentWonWoSwitch);
+        printf("[Thread %d] Score: %'llu:%'llu (%.*f%%) W:L \\w switch, %'llu:%'llu (%.*f%%) W:L \\wo switch\n", num+1, score->numWonWSwitch, score->numLostWSwitch, numDecPoints, score->percentWonWSwitch, score->numWonWoSwitch, score->numLostWoSwitch, numDecPoints, score->percentWonWoSwitch);
         totalNumWonWSwitch+=score->numWonWSwitch;
         totalNumLostWSwitch+=score->numLostWSwitch;
         totalNumWonWoSwitch+=score->numWonWoSwitch;
@@ -114,7 +114,7 @@ void *MonitorThread() {
       totalPercentWonWoSwitch = ((double)totalNumWonWoSwitch / ((double)totalNumWonWoSwitch+(double)totalNumLostWoSwitch)) * 100.0f;
       totalGames = totalNumWonWSwitch + totalNumWonWoSwitch + totalNumLostWSwitch + totalNumLostWoSwitch;
       printf("\nTotal percentages %.*f%% won switching, %.*f%% won without switching\n", numDecPoints,totalPercentWonWSwitch, numDecPoints, totalPercentWonWoSwitch);
-      printf("Total games played: %llu\n",totalGames);
+      printf("Total games played: %'llu\n",totalGames);
       totalNumWonWSwitch=0;
       totalNumWonWoSwitch=0;
       totalNumLostWSwitch=0;
@@ -128,14 +128,17 @@ int main(int argc, char *argv[]) {
   int num;
   int nCpus = get_nprocs();
   struct sigaction sigAct;
-
-  while ((num = getopt(argc, argv, "hsgap:r:t:d:T:")) != -1) {
+  char *localeStr = NULL;
+  while ((num = getopt(argc, argv, "hsSgap:r:t:d:T:")) != -1) {
     switch (num) {
       case 's':
         verbose=1;
         break;
       case 'g':
         stop=1;
+        break;
+      case 'S':
+        localeStr = setlocale(LC_NUMERIC, "");
         break;
       case 'T':
         if (atoi(optarg) <= 0) {
@@ -184,6 +187,7 @@ int main(int argc, char *argv[]) {
   printf("Installing signal handler...\n");
   sigaction(SIGINT, &sigAct, NULL);
   sigaction(SIGALRM, &sigAct, NULL);
+  if (localeStr) printf("Setting locale to %s\n", localeStr);
 
   if (!verbose || !noAnsi) printf(CLEARSCR);
 
