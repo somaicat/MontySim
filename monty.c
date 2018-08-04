@@ -104,7 +104,9 @@ void *MonitorThread() {
       printf("%s------ [%d:%d:%d] -----%s\n", (stopLoop = killtime) ? C_R : C_G, rt_Hours, rt_Minutes, rt_Seconds, bgColor); // NOTE: Since the use of the ternary conditional here could very easily be misunderstood, please note that it is CORRECT that there is only one '=' symbol, not two. It is intended that it FIRST set killtime to stopLoop, THEN evaluating it. This is NOT a typo.
       for (num=0; num < MAXCORES && gameThreadTable[num] != NULL; num++) {
         score = &gameThreadTable[num]->score;
-        printf("[Thread %d] Score: %'llu : %'llu (%.*f%%) W:L \\w switch, %'llu : %'llu (%.*f%%) W:L \\wo switch\n", num+1, score->numWonWSwitch, score->numLostWSwitch, numDecPoints, score->percentWonWSwitch, score->numWonWoSwitch, score->numLostWoSwitch, numDecPoints, score->percentWonWoSwitch);
+        printf("[Thread %d]\n", num+1);
+        printf("Switching:\tWins %'llu : %'llu Loses (%.*f%%)\n", score->numWonWSwitch, score->numLostWSwitch, numDecPoints, score->percentWonWSwitch);
+        printf("Not Switching:\tWins %'llu : %'llu Loses (%.*f%%)\n", score->numWonWoSwitch, score->numLostWoSwitch, numDecPoints, score->percentWonWoSwitch);
         totalNumWonWSwitch+=score->numWonWSwitch;
         totalNumLostWSwitch+=score->numLostWSwitch;
         totalNumWonWoSwitch+=score->numWonWoSwitch;
