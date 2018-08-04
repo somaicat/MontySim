@@ -190,7 +190,7 @@ int main(int argc, char *argv[]) {
   sigaction(SIGINT, &sigAct, NULL);
   sigaction(SIGALRM, &sigAct, NULL);
   if (localeStr) printf("Setting locale to %s\n", localeStr);
-//  bgColor = C_DOSBG;
+  bgColor = C_DOSBG;
   if (!verbose || !noAnsi) printf("%s%s", bgColor, CLEARSCR);
 
   if (!verbose) {// no verbose, start multithreaded operation
