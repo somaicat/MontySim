@@ -127,7 +127,7 @@ void *MonitorThread() {
 int main(int argc, char *argv[]) {
   int num;
   int nCpus = get_nprocs();
-  struct sigaction sigAct = {0};
+  struct sigaction sigAct;
 
   while ((num = getopt(argc, argv, "hsgap:r:t:d:T:")) != -1) {
     switch (num) {
@@ -179,6 +179,7 @@ int main(int argc, char *argv[]) {
     }
   }
 
+  memset(&sigAct, 0, sizeof(struct sigaction));
   sigAct.sa_handler = sighandler;
   printf("Installing signal handler...\n");
   sigaction(SIGINT, &sigAct, NULL);

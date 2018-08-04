@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <sys/sysinfo.h>
+#include <string.h>
 
 #define ERRORSTR(s) printf(failStr, s)
 #define ERRORRET(t, s) printf("%s: %s\n", t, s); ERRORSTR(t); return 0
