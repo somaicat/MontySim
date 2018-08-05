@@ -197,9 +197,8 @@ int main(int argc, char *argv[]) {
   sigaction(SIGALRM, &sigAct, NULL);
   if (localeStr) printf("Setting locale to %s\n", localeStr);
 
-  printf("%s%s", bgColor, CLEARSCR);
-
   if (!verbose) {// no verbose, start multithreaded operation
+    printf("%s%s", bgColor, CLEARSCR);
     for (num=0;num<nCpus && num < MAXCORES ;num++) { // Is this future proofing? maybe...
       gameThreadTable[num] = StartGame();
     }
@@ -211,6 +210,7 @@ int main(int argc, char *argv[]) {
   }
   else { // We're gonna run single threaded (slow) mode
     bgColor = C_RST;
+    if (!noAnsi) printf(CLEARSCR);
     gameThreadTable[0] = StartGame();
     free(gameThreadTable[0]);
   }
