@@ -96,7 +96,7 @@ void *MonitorThread() {
   int stopLoop=0;
 
   while(!stopLoop) {
-      if (killtime && bgColor == C_DOSBG) printf("%s%s",(bgColor=C_RST),CLEARSCR);
+      if (killtime && !strcmp(bgColor,C_DOSBG)) printf("%s%s",(bgColor=C_RST),CLEARSCR);
       printf(ZEROCURSOR);
       secondsPast = time(NULL) - startTime;
       rt_Hours = secondsPast / 3600;
