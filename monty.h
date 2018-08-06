@@ -32,7 +32,6 @@ const char *helpStr = \
 		"  -d\t\tDelay each game by number of ms\n"\
 		"  -t\t\tManually set number of threads to use in multithreaded mode\n"\
 		"  -T\t\tStop games after number of seconds\n"\
-                "  -r\t\tManually set status refresh rate in ms in multithreaded mode\n"\
 		"  -s\t\tSingle threaded verbose mode\n"\
 		"  -S\t\tShow thousands seperators\n"\
 		"  -g\t\tWait for enter at each round when in single threaded mode, no effect otherwise\n"\
@@ -47,6 +46,7 @@ int stop=0;
 int refreshRate=100;
 int gameDelay=0;
 int numDecPoints=2;
+int timer=0;
 
 // Structures
 typedef struct GameScore { 

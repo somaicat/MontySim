@@ -96,8 +96,9 @@ void *MonitorThread() {
   int stopLoop=0;
 
   while(!stopLoop) {
-      printf(ZEROCURSOR);
       secondsPast = time(NULL) - startTime;
+      if (timer > 0 && secondsPast >= timer) killtime = SIGALRM;
+      printf(ZEROCURSOR);
       rt_Hours = secondsPast / 3600;
       rt_Minutes = (secondsPast % 3600) / 60;
       rt_Seconds = secondsPast % 60;
@@ -131,7 +132,7 @@ int main(int argc, char *argv[]) {
   int nCpus = get_nprocs();
   struct sigaction sigAct;
   char *localeStr = NULL;
-  while ((num = getopt(argc, argv, "hsSgap:r:t:d:T:")) != -1) {
+  while ((num = getopt(argc, argv, "hsSgap:t:d:T:")) != -1) {
     switch (num) {
       case 's':
         verbose=1;
@@ -146,7 +147,7 @@ int main(int argc, char *argv[]) {
         if (atoi(optarg) <= 0) {
           ERRORRET(argv[0], "Time limit must be 1 second or more");
         }
-        alarm(atoi(optarg));
+        timer=atoi(optarg);
         break;
       case 'p':
         numDecPoints = atoi(optarg);
@@ -163,12 +164,12 @@ int main(int argc, char *argv[]) {
           ERRORRET(argv[0], "Game delay must be above 0ms");
         }
         break;
-      case 'r':
+/*      case 'r':
         refreshRate = atoi(optarg);
         if (refreshRate <= 0) {
           ERRORRET(argv[0], "Refresh rate must be above 0ms");
         }
-        break;
+        break;*/
       case 't':
         nCpus = atoi(optarg);
         if (nCpus > 0 && nCpus <= MAXCORES) break; // If the argument is retarded, this conditional ensures that we won't break out of the switch and will fall through to the default and return
