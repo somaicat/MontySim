@@ -14,7 +14,7 @@
 #define CLEARSCR "\033[2J"
 #define ZEROCURSOR "\033[H"
 #define SETCURSORLEFT "\033[10D"
-#define CLEARLINE "                                                           \033[60D"
+#define CLEARLINE "                                                                               \033[80D"
 
 #define MAXCORES 64 // Yeah 64 is probably too many (I think now... till iunno 30 years from now I look back and think "64? a modern cpu is measured in kilocores wtf is this?".
 

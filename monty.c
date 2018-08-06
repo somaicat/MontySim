@@ -107,9 +107,9 @@ void *MonitorThread() {
         score = &gameThreadTable[num]->score;
         printf("[Thread %d]\n", num+1);
         printf("%s", CLEARLINE);
-        printf("Switching:\tWins %'llu\tLoses %'llu\t(%.*f%%)\n", score->numWonWSwitch, score->numLostWSwitch, numDecPoints, score->percentWonWSwitch);
+        printf("Switching:\tWins %'llu\t\tLoses %'llu\t(%.*f%%)\n", score->numWonWSwitch, score->numLostWSwitch, numDecPoints, score->percentWonWSwitch);
         printf("%s", CLEARLINE);
-        printf("Not Switching:\tWins %'llu\tLoses %'llu\t(%.*f%%)\n", score->numWonWoSwitch, score->numLostWoSwitch, numDecPoints, score->percentWonWoSwitch);
+        printf("Not Switching:\tWins %'llu\t\tLoses %'llu\t(%.*f%%)\n", score->numWonWoSwitch, score->numLostWoSwitch, numDecPoints, score->percentWonWoSwitch);
         totalNumWonWSwitch+=score->numWonWSwitch;
         totalNumLostWSwitch+=score->numLostWSwitch;
         totalNumWonWoSwitch+=score->numWonWoSwitch;
