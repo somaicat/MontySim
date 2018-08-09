@@ -20,10 +20,10 @@ void InitNCurses() {
 void BuildWindows() {
   int y, x;
   getmaxyx(nwins.win, y, x);				// Get max window size
-  nwins.titleWin = subwin(nwins.win,1,x,0,0);			// Create title window
+  nwins.titleWin = newwin(1,x,0,0);			// Create title window
   nwins.threadWin = subwin(nwins.win,y-5, x, 1, 0);		// Create thread info window
   wbkgd(nwins.titleWin, COLOR_PAIR(2)|A_BOLD);	// Activate title window colors
-  wbkgd(nwins.win, COLOR_PAIR(2)|A_BOLD);		// Activate main window colors
+  wbkgd(nwins.win, COLOR_PAIR(1)|A_BOLD);		// Activate main window colors
   wbkgd(nwins.threadWin, COLOR_PAIR(1)|A_BOLD);	// Activate thread window colors
   scrollok(nwins.threadWin, TRUE);			// Turn on thread window scrolling
   nwins.totalWin = subwin(nwins.win,4, x, y-4, 0);		// Create totals Window
@@ -31,6 +31,7 @@ void BuildWindows() {
   box(nwins.totalWin, 0,0);				// Draw total windows box
   refresh();
   wrefresh(nwins.threadWin);
+  wrefresh(nwins.titleWin);
   wrefresh(nwins.totalWin);
 }
 
@@ -62,7 +63,6 @@ void MonitorNCurses() {
   BuildWindows();
   getmaxyx(nwins.win, y, x);
 
-  // Build NCurses window
   while (!killtime) {
     secondsPast = time(NULL) - startTime;
 //      if (timer > 0 && secondsPast >= timer) killtime = SIGALRM;
