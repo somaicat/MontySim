@@ -1,5 +1,6 @@
 #include "monty.h"
 #include <ncurses.h>
+
 struct NCursesWindows {
 WINDOW *threadWin;
 WINDOW *totalWin;
@@ -53,7 +54,8 @@ void MonitorNCurses() {
   ts.tv_sec = refreshRate/1000;
   ts.tv_nsec = (refreshRate-(refreshRate/1000*1000))*1000000;
   GameScore *score;
-  char timerBuf[128];
+  char buf[256];
+  int offsetx,offsety;
 
   if ((nwins.win = initscr()) == NULL) {
   printf("Initialization of ncurses failed!\n");
@@ -69,17 +71,28 @@ void MonitorNCurses() {
     rt_Hours = secondsPast / 3600;
     rt_Minutes = (secondsPast % 3600) / 60;
     rt_Seconds = secondsPast % 60;
-    sprintf(timerBuf, "%d:%d:%d\n", rt_Hours, rt_Minutes, rt_Seconds);
+    sprintf(buf, "%d:%d:%d\n", rt_Hours, rt_Minutes, rt_Seconds);
 
     mvwprintw(nwins.titleWin, 0,0,"Monty Hall Simulations Running");
-    mvwprintw(nwins.titleWin, 0,x-strlen(timerBuf),"%s", timerBuf);
+    mvwprintw(nwins.titleWin, 0,x-strlen(buf),"%s", buf);
 // -------------
       wclear(nwins.threadWin);
     for (num=0; num < MAXCORES && gameThreadTable[num] != NULL; num++) {
       score = &gameThreadTable[num]->score;
       wprintw(nwins.threadWin, "\n [Thread %d]\n", num+1);
-      wprintw(nwins.threadWin, " Switching:\tWins %'llu\t\tLoses %'llu\t(%.*f%%)\n", score->numWonWSwitch, score->numLostWSwitch, numDecPoints, score->percentWonWSwitch);
-      wprintw(nwins.threadWin, " Not Switching:\tWins %'llu\t\tLoses %'llu\t(%.*f%%)\n", score->numWonWoSwitch, score->numLostWoSwitch, numDecPoints, score->percentWonWoSwitch);
+      wprintw(nwins.threadWin, " Switching:");
+      getyx(nwins.threadWin, offsety, offsetx);
+      mvwprintw(nwins.threadWin, offsety, x/4, "Wins %'llu", score->numWonWSwitch);
+      mvwprintw(nwins.threadWin, offsety, x/2, "Loses %'llu", score->numLostWSwitch);
+      sprintf(buf, "Winning odds: %.*f%%\n", numDecPoints, score->percentWonWSwitch);
+      mvwprintw(nwins.threadWin, offsety, x-(strlen(buf)), "%s", buf);
+
+      wprintw(nwins.threadWin, " Not Switching:");
+      getyx(nwins.threadWin, offsety, offsetx);
+      mvwprintw(nwins.threadWin, offsety, x/4, "Wins %'llu", score->numWonWoSwitch);
+      mvwprintw(nwins.threadWin, offsety, x/2, "Loses %'llu", score->numLostWoSwitch);
+      sprintf(buf, "Winning odds: %.*f%%\n", numDecPoints, score->percentWonWoSwitch);
+      mvwprintw(nwins.threadWin, offsety, x-(strlen(buf)), "%s", buf);
 
       totalNumWonWSwitch+=score->numWonWSwitch;
       totalNumLostWSwitch+=score->numLostWSwitch;
