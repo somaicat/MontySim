@@ -1,4 +1,4 @@
-FLAGS = -lpthread
+FLAGS = -lpthread -lncurses
 
 all: monty
 
