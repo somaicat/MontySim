@@ -37,7 +37,6 @@ void BuildWindows() {
 }
 
 void MonitorNCurses() {
-  WINDOW *win, *threadWin, *totalWin, *titleWin;
   float totalPercentWonWSwitch=0;
   float totalPercentWonWoSwitch=0;
   unsigned long long totalNumWonWSwitch=0;
