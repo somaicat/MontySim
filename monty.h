@@ -74,6 +74,7 @@ typedef struct GameThread {
 
 // Functions
 extern void *MonitorThread();
+extern void MonitorNCurses();
 
 // Global Thread Table
 extern GameThread *gameThreadTable[MAXCORES]; 

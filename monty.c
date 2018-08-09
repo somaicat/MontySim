@@ -215,7 +215,11 @@ int main(int argc, char *argv[]) {
     for (num=0;num<nCpus && num < MAXCORES ;num++) { // Is this future proofing? maybe...
       gameThreadTable[num] = StartGame();
     }
+    #ifdef NCURSES
+    MonitorNCurses();
+    #else
     MonitorThread();
+    #endif
     for (num=0;num<nCpus && num < MAXCORES ;num++) { // ... or maybe not. 
       pthread_join(gameThreadTable[num]->thread, 0);
       free(gameThreadTable[num]); // Now that we've rejoined all the worker threads, free the memory.
