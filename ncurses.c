@@ -7,9 +7,31 @@ WINDOW *titleWin;
 WINDOW *win;
 } NCursesWindows;
 
-struct NCursesWindows BuildWindows() {
+struct NCursesWindows nwins;
 
+void InitNCurses() {
+  curs_set(0);					// Turn off cursor
+  start_color();				// Turn on colors NOTE: add conditional in case colors not supported
+  init_pair(1, COLOR_WHITE, COLOR_BLUE);	// Add white on blue color pair
+  init_pair(2, COLOR_WHITE, COLOR_RED);		// Add white on red color pair
+  attron(COLOR_PAIR(1));			// Turn on WoB color pair
+}
 
+void BuildWindows() {
+  int y, x;
+  getmaxyx(nwins.win, y, x);				// Get max window size
+  nwins.titleWin = newwin(1,x,0,0);			// Create title window
+  nwins.threadWin = newwin(y-5, x, 1, 0);		// Create thread info window
+  wbkgd(nwins.titleWin, COLOR_PAIR(2)|A_BOLD);	// Activate title window colors
+  wbkgd(nwins.win, COLOR_PAIR(1)|A_BOLD);		// Activate main window colors
+  wbkgd(nwins.threadWin, COLOR_PAIR(1)|A_BOLD);	// Activate thread window colors
+  scrollok(nwins.threadWin, TRUE);			// Turn on thread window scrolling
+  nwins.totalWin = newwin(4, x, y-4, 0);		// Create totals Window
+  wbkgd(nwins.totalWin, COLOR_PAIR(1)|A_BOLD);		// Activate total windows colors
+  box(nwins.totalWin, 0,0);				// Draw total windows box
+  refresh();
+  wrefresh(nwins.threadWin);
+  wrefresh(nwins.totalWin);
 }
 
 void MonitorNCurses() {
@@ -21,7 +43,6 @@ void MonitorNCurses() {
   unsigned long long totalNumLostWSwitch=0;
   unsigned long long totalNumLostWoSwitch=0;
   unsigned long long totalGames;
-
   struct timespec ts;
   int y, x;
   int secondsPast;
@@ -33,28 +54,15 @@ void MonitorNCurses() {
   GameScore *score;
   char timerBuf[128];
 
-  if ((win = initscr()) == NULL) {
+  if ((nwins.win = initscr()) == NULL) {
   printf("Initialization of ncurses failed!\n");
   }
+
+  InitNCurses();
+  BuildWindows();
+  getmaxyx(nwins.win, y, x);
+
   // Build NCurses window
-  curs_set(0);					// Turn off cursor
-  start_color();				// Turn on colors NOTE: add conditional in case colors not supported
-  init_pair(1, COLOR_WHITE, COLOR_BLUE);	// Add white on blue color pair
-  init_pair(2, COLOR_WHITE, COLOR_RED);		// Add white on red color pair
-  attron(COLOR_PAIR(1));			// Turn on WoB color pair
-  getmaxyx(win, y, x);				// Get max window size
-  titleWin = newwin(1,x,0,0);			// Create title window
-  threadWin = newwin(y-5, x, 1, 0);		// Create thread info window
-  wbkgd(titleWin, COLOR_PAIR(2)|A_BOLD);	// Activate title window colors
-  wbkgd(win, COLOR_PAIR(1)|A_BOLD);		// Activate main window colors
-  wbkgd(threadWin, COLOR_PAIR(1)|A_BOLD);	// Activate thread window colors
-  scrollok(threadWin, TRUE);			// Turn on thread window scrolling
-  totalWin = newwin(4, x, y-4, 0);		// Create totals Window
-  wbkgd(totalWin, COLOR_PAIR(1));		// Activate total windows colors
-  box(totalWin, 0,0);				// Draw total windows box
-  refresh();
-  wrefresh(threadWin);
-  wrefresh(totalWin);
   while (!killtime) {
     secondsPast = time(NULL) - startTime;
 //      if (timer > 0 && secondsPast >= timer) killtime = SIGALRM;
@@ -63,36 +71,36 @@ void MonitorNCurses() {
     rt_Seconds = secondsPast % 60;
     sprintf(timerBuf, "%d:%d:%d\n", rt_Hours, rt_Minutes, rt_Seconds);
 
-    mvwprintw(titleWin, 0,0,"Monty Hall Simulations Running");
-    mvwprintw(titleWin, 0,x-strlen(timerBuf),"%s", timerBuf);
+    mvwprintw(nwins.titleWin, 0,0,"Monty Hall Simulations Running");
+    mvwprintw(nwins.titleWin, 0,x-strlen(timerBuf),"%s", timerBuf);
 // -------------
-      wclear(threadWin);
+      wclear(nwins.threadWin);
     for (num=0; num < MAXCORES && gameThreadTable[num] != NULL; num++) {
       score = &gameThreadTable[num]->score;
-      wprintw(threadWin, "\n [Thread %d]\n", num+1);
-      wprintw(threadWin, " Switching:\tWins %'llu\t\tLoses %'llu\t(%.*f%%)\n", score->numWonWSwitch, score->numLostWSwitch, numDecPoints, score->percentWonWSwitch);
-      wprintw(threadWin, " Not Switching:\tWins %'llu\t\tLoses %'llu\t(%.*f%%)\n", score->numWonWoSwitch, score->numLostWoSwitch, numDecPoints, score->percentWonWoSwitch);
+      wprintw(nwins.threadWin, "\n [Thread %d]\n", num+1);
+      wprintw(nwins.threadWin, " Switching:\tWins %'llu\t\tLoses %'llu\t(%.*f%%)\n", score->numWonWSwitch, score->numLostWSwitch, numDecPoints, score->percentWonWSwitch);
+      wprintw(nwins.threadWin, " Not Switching:\tWins %'llu\t\tLoses %'llu\t(%.*f%%)\n", score->numWonWoSwitch, score->numLostWoSwitch, numDecPoints, score->percentWonWoSwitch);
 
       totalNumWonWSwitch+=score->numWonWSwitch;
       totalNumLostWSwitch+=score->numLostWSwitch;
       totalNumWonWoSwitch+=score->numWonWoSwitch;
       totalNumLostWoSwitch+=score->numLostWoSwitch;
       }
-      box(threadWin, 0,0);
+      box(nwins.threadWin, 0,0);
       totalPercentWonWSwitch = ((double)totalNumWonWSwitch / ((double)totalNumWonWSwitch+(double)totalNumLostWSwitch)) * 100.0f;
       totalPercentWonWoSwitch = ((double)totalNumWonWoSwitch / ((double)totalNumWonWoSwitch+(double)totalNumLostWoSwitch)) * 100.0f;
       totalGames = totalNumWonWSwitch + totalNumWonWoSwitch + totalNumLostWSwitch + totalNumLostWoSwitch;
-      mvwprintw(totalWin, 1,1,"Total percentages %.*f%% won switching, %.*f%% won without switching", numDecPoints,totalPercentWonWSwitch, numDecPoints, totalPercentWonWoSwitch);
-      mvwprintw(totalWin, 2,1,"Total games played: %'llu",totalGames);
+      mvwprintw(nwins.totalWin, 1,1,"Total percentages %.*f%% won switching, %.*f%% won without switching", numDecPoints,totalPercentWonWSwitch, numDecPoints, totalPercentWonWoSwitch);
+      mvwprintw(nwins.totalWin, 2,1,"Total games played: %'llu",totalGames);
       totalNumWonWSwitch=0;
       totalNumWonWoSwitch=0;
       totalNumLostWSwitch=0;
       totalNumLostWoSwitch=0;
 // ----------
 //    refresh();
-    wrefresh(totalWin);
-    wrefresh(titleWin);
-    wrefresh(threadWin);
+    wrefresh(nwins.totalWin);
+    wrefresh(nwins.titleWin);
+    wrefresh(nwins.threadWin);
     nanosleep(&ts, NULL);
   }
   endwin();
