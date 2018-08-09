@@ -1,5 +1,16 @@
 #include "monty.h"
 #include <ncurses.h>
+struct NCursesWindows {
+WINDOW *threadWin;
+WINDOW *totalWin;
+WINDOW *titleWin;
+WINDOW *win;
+} NCursesWindows;
+
+struct NCursesWindows BuildWindows() {
+
+
+}
 
 void MonitorNCurses() {
   WINDOW *win, *threadWin, *totalWin, *titleWin;
@@ -25,21 +36,22 @@ void MonitorNCurses() {
   if ((win = initscr()) == NULL) {
   printf("Initialization of ncurses failed!\n");
   }
-  curs_set(0);
-  start_color();
-  init_pair(1, COLOR_WHITE, COLOR_BLUE);
-  init_pair(2, COLOR_WHITE, COLOR_RED);
-  attron(COLOR_PAIR(1));
-  getmaxyx(win, y, x);
-  titleWin = newwin(1,x,0,0);
-  threadWin = newwin(y-5, x, 1, 0);
-  wbkgd(titleWin, COLOR_PAIR(2));
-  wbkgd(win, COLOR_PAIR(1));
-  wbkgd(threadWin, COLOR_PAIR(1));
-  scrollok(threadWin, TRUE);
-  totalWin = newwin(4, x, y-4, 0);
-  wbkgd(totalWin, COLOR_PAIR(1));
-  box(totalWin, 0,0);
+  // Build NCurses window
+  curs_set(0);					// Turn off cursor
+  start_color();				// Turn on colors NOTE: add conditional in case colors not supported
+  init_pair(1, COLOR_WHITE, COLOR_BLUE);	// Add white on blue color pair
+  init_pair(2, COLOR_WHITE, COLOR_RED);		// Add white on red color pair
+  attron(COLOR_PAIR(1));			// Turn on WoB color pair
+  getmaxyx(win, y, x);				// Get max window size
+  titleWin = newwin(1,x,0,0);			// Create title window
+  threadWin = newwin(y-5, x, 1, 0);		// Create thread info window
+  wbkgd(titleWin, COLOR_PAIR(2)|A_BOLD);	// Activate title window colors
+  wbkgd(win, COLOR_PAIR(1)|A_BOLD);		// Activate main window colors
+  wbkgd(threadWin, COLOR_PAIR(1)|A_BOLD);	// Activate thread window colors
+  scrollok(threadWin, TRUE);			// Turn on thread window scrolling
+  totalWin = newwin(4, x, y-4, 0);		// Create totals Window
+  wbkgd(totalWin, COLOR_PAIR(1));		// Activate total windows colors
+  box(totalWin, 0,0);				// Draw total windows box
   refresh();
   wrefresh(threadWin);
   wrefresh(totalWin);
