@@ -1,5 +1,6 @@
 FLAGS = -lpthread -lncurses
 DEFINES = -DNCURSES
+FILES = monty.o ncurses.o
 
 all: monty
 
@@ -10,10 +11,12 @@ release: FLAGS += -Wall -O3
 release: monty
 
 noncurses: DEFINES =
+noncurses: FLAGS = -lpthread
+noncurses: FILES = monty.o
 noncurses: monty
 
-monty: monty.o ncurses.o
-	gcc monty.o ncurses.o $(FLAGS) -o ./monty
+monty: $(FILES)
+	gcc $(FILES) $(FLAGS) -o ./monty
 
 monty.o: monty.c
 	gcc -c ./monty.c $(FLAGS) $(DEFINES) -o monty.o

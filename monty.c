@@ -211,7 +211,9 @@ int main(int argc, char *argv[]) {
   if (localeStr) printf("Setting locale to %s\n", localeStr);
 
   if (!verbose) {// no verbose, start multithreaded operation
+    #ifndef NCURSES
     printf("%s%s", bgColor, CLEARSCR);
+    #endif
     for (num=0;num<nCpus && num < MAXCORES ;num++) { // Is this future proofing? maybe...
       gameThreadTable[num] = StartGame();
     }
