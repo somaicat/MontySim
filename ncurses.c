@@ -32,6 +32,7 @@ void BuildWindows() {
   wbkgd(nwins.totalWin, COLOR_PAIR(1)|A_BOLD);		// Activate total windows colors
   box(nwins.totalWin, 0,0);				// Draw total windows box
   mvwprintw(nwins.totalWin, 0,2,"Totals");
+  mvwprintw(nwins.titleWin, 0,0,"Monty Hall Simulations Running");
 
   refresh();
   wrefresh(nwins.threadWin);
@@ -66,8 +67,6 @@ void MonitorNCurses() {
   InitNCurses();
   BuildWindows();
   getmaxyx(nwins.win, y, x);
-
-  mvwprintw(nwins.titleWin, 0,0,"Monty Hall Simulations Running");
 
   while (!killtime) {
     secondsPast = time(NULL) - startTime;
