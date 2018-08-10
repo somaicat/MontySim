@@ -16,7 +16,7 @@ void InitNCurses() {
   init_pair(1, COLOR_WHITE, COLOR_BLUE);	// Add white on blue color pair
   init_pair(2, COLOR_WHITE, COLOR_RED);		// Add white on red color pair
   init_pair(3, COLOR_WHITE, COLOR_CYAN);	// Add white on blue color pair
-  attron(COLOR_PAIR(1));			// Turn on WoB color pair
+//  attron(COLOR_PAIR(1));			// Turn on WoB color pair
 }
 
 void BuildWindows() {
@@ -24,12 +24,12 @@ void BuildWindows() {
   getmaxyx(nwins.win, y, x);				// Get max window size
   nwins.titleWin = newwin(1,x,0,0);			// Create title window
   nwins.threadWin = subwin(nwins.win,y-5, x, 1, 0);		// Create thread info window
+  nwins.totalWin = subwin(nwins.win,4, x, y-4, 0);		// Create totals Window
   wbkgd(nwins.titleWin, COLOR_PAIR(2)|A_BOLD);	// Activate title window colors
   wbkgd(nwins.win, COLOR_PAIR(1)|A_BOLD);		// Activate main window colors
   wbkgd(nwins.threadWin, COLOR_PAIR(1)|A_BOLD);	// Activate thread window colors
   scrollok(nwins.threadWin, TRUE);			// Turn on thread window scrolling
-  nwins.totalWin = subwin(nwins.win,4, x, y-4, 0);		// Create totals Window
-  wbkgd(nwins.totalWin, COLOR_PAIR(3)|A_BOLD);		// Activate total windows colors
+  wbkgd(nwins.totalWin, COLOR_PAIR(1)|A_BOLD);		// Activate total windows colors
   box(nwins.totalWin, 0,0);				// Draw total windows box
   mvwprintw(nwins.totalWin, 0,2,"Totals");
 
@@ -75,7 +75,7 @@ void MonitorNCurses() {
     rt_Hours = secondsPast / 3600;
     rt_Minutes = (secondsPast % 3600) / 60;
     rt_Seconds = secondsPast % 60;
-    sprintf(buf, "%d:%d:%d\n", rt_Hours, rt_Minutes, rt_Seconds);
+    sprintf(buf, "%d:%.2d:%.2d\n", rt_Hours, rt_Minutes, rt_Seconds);
 
     mvwprintw(nwins.titleWin, 0,x-strlen(buf),"%s", buf);
 
@@ -86,16 +86,16 @@ void MonitorNCurses() {
       wprintw(nwins.threadWin, " [Thread %d]\n", num+1);
       wprintw(nwins.threadWin, " Switching:");
       getyx(nwins.threadWin, offsety, offsetx);
-      mvwprintw(nwins.threadWin, offsety, x/4, "Wins %'llu", score->numWonWSwitch);
-      mvwprintw(nwins.threadWin, offsety, x/2, "Loses %'llu", score->numLostWSwitch);
-      sprintf(buf, "Winning odds: %.*f%%\n", numDecPoints, score->percentWonWSwitch);
+      mvwprintw(nwins.threadWin, offsety, x/4, "Wins: %'llu", score->numWonWSwitch);
+      mvwprintw(nwins.threadWin, offsety, x/2, "Loses: %'llu", score->numLostWSwitch);
+      sprintf(buf, "Odds: %.*f%%\n", numDecPoints, score->percentWonWSwitch);
       mvwprintw(nwins.threadWin, offsety, x-(strlen(buf)), "%s", buf);
 
       wprintw(nwins.threadWin, " Not Switching:");
       getyx(nwins.threadWin, offsety, offsetx);
-      mvwprintw(nwins.threadWin, offsety, x/4, "Wins %'llu", score->numWonWoSwitch);
-      mvwprintw(nwins.threadWin, offsety, x/2, "Loses %'llu", score->numLostWoSwitch);
-      sprintf(buf, "Winning odds: %.*f%%\n", numDecPoints, score->percentWonWoSwitch);
+      mvwprintw(nwins.threadWin, offsety, x/4, "Wins: %'llu", score->numWonWoSwitch);
+      mvwprintw(nwins.threadWin, offsety, x/2, "Loses: %'llu", score->numLostWoSwitch);
+      sprintf(buf, "Odds: %.*f%%\n", numDecPoints, score->percentWonWoSwitch);
       mvwprintw(nwins.threadWin, offsety, x-(strlen(buf)), "%s", buf);
 
       totalNumWonWSwitch+=score->numWonWSwitch;
