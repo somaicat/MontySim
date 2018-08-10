@@ -34,14 +34,16 @@ const char *helpStr = \
 		"Monty Hall game simulation\n\n"\
 		"  -p\t\tSpecify number of decimal points displayed (between 2 and 10)\n"\
 		"  -d\t\tDelay each game by number of ms\n"\
-		"  -t\t\tManually set number of threads to use in multithreaded mode\n"\
 		"  -T\t\tStop games after number of seconds\n"\
-		"  -s\t\tSingle threaded verbose mode\n"\
 		"  -S\t\tShow thousands seperators\n"\
-		"  -g\t\tWait for enter at each round when in single threaded mode, no effect otherwise\n"\
-		"  -a\t\tNo ANSI cursor controls, show ALL games (no effect in multithreaded mode)\n"\
-		"  -A\t\tNo ANSI background colors (foreground colors still exist if supported, no effect in singlethreaded)\n"\
-		"  -h\t\tDisplays this help informaion\n";
+		"  -h\t\tDisplays this help informaion\n"\
+		"\n--------- Multithreaded options\n"\
+		"  -t\t\tManually set number of threads to use\n"\
+		"  -A\t\tNo ANSI background colors (foreground colors still exist if supported)\n"\
+		"\n--------- Singlethreaded options\n"\
+		"  -s\t\tSingle threaded (verbose) mode\n"\
+		"  -g\t\tWait for enter at the end of each game\n"\
+		"  -a\t\tNo ANSI cursor controls, show ALL games\n";
 
 // Globals //Note: This will need modification if we ever switch to more code files.
 int killtime=0;
