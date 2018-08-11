@@ -27,9 +27,9 @@
 #define C_DOSFG "\e[31;47m"
 
 // Constant strings
-const char *ContestantChoiceStr[] = {"\e[94mto stick with door\e[m", "\e[93mto change to door\e[m"};
-const char *failStr = "Use %s -h for more information\n";
-const char *helpStr = \
+const static char *ContestantChoiceStr[] = {"\e[94mto stick with door\e[m", "\e[93mto change to door\e[m"};
+const static char *failStr = "Use %s -h for more information\n";
+const static char *helpStr = \
 		"Usage: %s [OPTION]\n"\
 		"Monty Hall game simulation\n\n"\
 		"  -p <points>\tSpecify number of decimal points displayed (between 2 and 10)\n"\
@@ -46,15 +46,15 @@ const char *helpStr = \
 		"  -a\t\tNo ANSI cursor controls, show ALL games\n";
 
 // Globals //Note: This will need modification if we ever switch to more code files.
-int killtime=0;
-int verbose=0;
-int noAnsi=0;
-int stop=0;
-int refreshRate=100;
-int gameDelay=0;
-int numDecPoints=2;
-int timer=0;
-char *bgColor;
+extern int killtime;
+extern int verbose;
+extern int noAnsi;
+extern int stop;
+extern int refreshRate;
+extern int gameDelay;
+extern int numDecPoints;
+extern int timer;
+extern char *bgColor;
 
 // Structures
 typedef struct GameScore { 
@@ -73,5 +73,5 @@ typedef struct GameThread {
 } GameThread;
 
 // Global Thread Table
-GameThread *gameThreadTable[MAXCORES] = {0}; 
+extern GameThread *gameThreadTable[MAXCORES]; 
 

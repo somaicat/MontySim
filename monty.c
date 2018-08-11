@@ -1,5 +1,17 @@
 #include "monty.h"
+
+// Globals
+int killtime=0;
+int verbose=0;
+int noAnsi=0;
+int stop=0;
+int refreshRate=100;
+int gameDelay=0;
+int numDecPoints=2;
+int timer=0;
 char *bgColor = C_DOSBG;
+GameThread *gameThreadTable[MAXCORES] = {0};
+
 void sighandler(int sig) {
   killtime=sig; // Using a global for now in preparation for future threading support
 }
