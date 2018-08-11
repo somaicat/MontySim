@@ -72,6 +72,9 @@ typedef struct GameThread {
   unsigned int seed; 
 } GameThread;
 
+// Functions
+extern void *MonitorThread();
+
 // Global Thread Table
 extern GameThread *gameThreadTable[MAXCORES]; 
 
