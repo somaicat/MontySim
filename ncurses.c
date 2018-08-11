@@ -70,7 +70,7 @@ void MonitorNCurses() {
 
   while (!killtime) {
     secondsPast = time(NULL) - startTime;
-//      if (timer > 0 && secondsPast >= timer) killtime = SIGALRM;
+    if (timer > 0 && secondsPast >= timer) killtime = SIGALRM;
     rt_Hours = secondsPast / 3600;
     rt_Minutes = (secondsPast % 3600) / 60;
     rt_Seconds = secondsPast % 60;
@@ -121,4 +121,7 @@ void MonitorNCurses() {
     nanosleep(&ts, NULL);
   }
   endwin();
+  MonitorThread(); // Call the non-ncurses monitor code. It'll give one listing of the results before finishing since killtime has been reached. Allowing us to see the results after ncurses display stops
+
+  return;
 }
