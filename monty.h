@@ -32,13 +32,13 @@ const char *failStr = "Use %s -h for more information\n";
 const char *helpStr = \
 		"Usage: %s [OPTION]\n"\
 		"Monty Hall game simulation\n\n"\
-		"  -p\t\tSpecify number of decimal points displayed (between 2 and 10)\n"\
-		"  -d\t\tDelay each game by number of ms\n"\
-		"  -T\t\tStop games after number of seconds\n"\
+		"  -p <points>\tSpecify number of decimal points displayed (between 2 and 10)\n"\
+		"  -d <delay>\tDelay each game by number of ms\n"\
+		"  -T <timeout>\tStop games after number of seconds\n"\
 		"  -S\t\tShow thousands seperators\n"\
 		"  -h\t\tDisplays this help informaion\n"\
 		"\n--------- Multithreaded options\n"\
-		"  -t\t\tManually set number of threads to use\n"\
+		"  -t <threads>\tManually set number of threads to use\n"\
 		"  -A\t\tNo ANSI background colors (foreground colors still exist if supported)\n"\
 		"\n--------- Singlethreaded options\n"\
 		"  -s\t\tSingle threaded (verbose) mode\n"\
