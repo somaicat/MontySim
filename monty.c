@@ -205,7 +205,7 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  if ((extLibrary = dlopen("ncurses.so", RTLD_NOW)) == NULL)
+  if ((extLibrary = dlopen("./ncurses.so", RTLD_NOW)) == NULL)
     printf("NCurses support not found: %s\n",dlerror());
   else if ((ExtOutputLoop = dlsym(extLibrary, "ExtOutputLoop")) == NULL) {
    printf("Ncurses support library corrupt\n");
