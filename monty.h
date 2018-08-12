@@ -7,6 +7,7 @@
 #include <sys/sysinfo.h>
 #include <string.h>
 #include <locale.h>
+#include <dlfcn.h>
 
 #define ERRORSTR(s) printf(failStr, s)
 #define ERRORRET(t, s) printf("%s: %s\n", t, s); ERRORSTR(t); return 0
@@ -73,8 +74,7 @@ typedef struct GameThread {
 } GameThread;
 
 // Functions
-extern void *MonitorThread();
-extern void MonitorNCurses();
+extern void IntOutputLoop();
 
 // Global Thread Table
 extern GameThread *gameThreadTable[MAXCORES]; 

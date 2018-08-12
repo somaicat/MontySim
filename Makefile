@@ -1,8 +1,7 @@
-FLAGS = -lpthread -lncurses
-DEFINES = -DNCURSES
-FILES = monty.o ncurses.o
+FLAGS = -lpthread -ldl
+FILES = monty.o
 
-all: monty
+all: monty ncurses.so
 
 debug: FLAGS += -g
 debug: monty
@@ -10,19 +9,15 @@ debug: monty
 release: FLAGS += -Wall -O3
 release: monty
 
-noncurses: DEFINES =
-noncurses: FLAGS = -lpthread
-noncurses: FILES = monty.o
-noncurses: monty
-
 monty: $(FILES)
-	gcc $(FILES) $(FLAGS) -o ./monty
+	gcc -rdynamic $(FILES) $(FLAGS) -o ./monty
 
 monty.o: monty.c
-	gcc -c ./monty.c $(FLAGS) $(DEFINES) -o monty.o
+	gcc -c ./monty.c $(FLAGS) -o monty.o
 
-ncurses.o: ncurses.c
-	gcc -c ./ncurses.c $(FLAGS) $(DEFINES) -o ncurses.o
+ncurses.so: ncurses.c
+	gcc -c ./ncurses.c $(FLAGS) -fpic -lncurses -o ncurses.o
+	gcc -shared -lncurses -o ./ncurses.so ./ncurses.o
 
 clean:
-	rm ./*.o ./monty
+	rm ./*.o ./monty ./*.so

@@ -40,7 +40,7 @@ void BuildWindows() {
   wrefresh(nwins.totalWin);
 }
 
-void MonitorNCurses() {
+void ExtOutputLoop() {
   float totalPercentWonWSwitch=0;
   float totalPercentWonWoSwitch=0;
   unsigned long long totalNumWonWSwitch=0;
@@ -121,7 +121,7 @@ void MonitorNCurses() {
     nanosleep(&ts, NULL);
   }
   endwin();
-  MonitorThread(); // Call the non-ncurses monitor code. It'll give one listing of the results before finishing since killtime has been reached. Allowing us to see the results after ncurses display stops
+  IntOutputLoop(); // Call the non-ncurses monitor code. It'll give one listing of the results before finishing since killtime has been reached. Allowing us to see the results after ncurses display stops
 
   return;
 }

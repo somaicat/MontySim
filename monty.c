@@ -11,6 +11,7 @@ int numDecPoints=2;
 int timer=0;
 char *bgColor = C_DOSBG;
 GameThread *gameThreadTable[MAXCORES] = {0};
+void (*ExtOutputLoop)() = NULL;
 
 void sighandler(int sig) {
   killtime=sig; // Using a global for now in preparation for future threading support
@@ -89,7 +90,7 @@ GameThread *StartGame() {
   return game;
 }
 
-void *MonitorThread() {
+void IntOutputLoop() {
   float totalPercentWonWSwitch=0;
   float totalPercentWonWoSwitch=0;
   unsigned long long totalNumWonWSwitch=0;
@@ -139,7 +140,7 @@ void *MonitorThread() {
       totalNumLostWoSwitch=0;
       nanosleep(&ts, NULL); // Sleep main thread for refresh period
   }
-  return NULL;
+  return;
 }
 
 int main(int argc, char *argv[]) {
@@ -147,6 +148,7 @@ int main(int argc, char *argv[]) {
   int nCpus = get_nprocs();
   struct sigaction sigAct;
   char *localeStr = NULL;
+  void *extLibrary;
   while ((num = getopt(argc, argv, "hsSgaAp:t:d:T:")) != -1) {
     switch (num) {
       case 's':
@@ -203,6 +205,15 @@ int main(int argc, char *argv[]) {
     }
   }
 
+  if ((extLibrary = dlopen("ncurses.so", RTLD_NOW)) == NULL)
+    printf("NCurses support not found: %s\n",dlerror());
+  else if ((ExtOutputLoop = dlsym(extLibrary, "ExtOutputLoop")) == NULL) {
+   printf("Ncurses support library corrupt\n");
+   getchar();
+  }
+  else
+    printf("NCurses support found\n");
+
   memset(&sigAct, 0, sizeof(struct sigaction));
   sigAct.sa_handler = sighandler;
   printf("Installing signal handler...\n");
@@ -211,17 +222,16 @@ int main(int argc, char *argv[]) {
   if (localeStr) printf("Setting locale to %s\n", localeStr);
 
   if (!verbose) {// no verbose, start multithreaded operation
-    #ifndef NCURSES
-    printf("%s%s", bgColor, CLEARSCR);
-    #endif
+    if (ExtOutputLoop == NULL) {
+      printf("%s%s", bgColor, CLEARSCR);
+    }
     for (num=0;num<nCpus && num < MAXCORES ;num++) { // Is this future proofing? maybe...
       gameThreadTable[num] = StartGame();
     }
-    #ifdef NCURSES
-    MonitorNCurses();
-    #else
-    MonitorThread();
-    #endif
+    if (ExtOutputLoop == NULL)
+      IntOutputLoop();
+    else
+      ExtOutputLoop();
     for (num=0;num<nCpus && num < MAXCORES ;num++) { // ... or maybe not. 
       pthread_join(gameThreadTable[num]->thread, 0);
       free(gameThreadTable[num]); // Now that we've rejoined all the worker threads, free the memory.
@@ -235,5 +245,6 @@ int main(int argc, char *argv[]) {
   }
   if (killtime == SIGALRM) printf("Timeout was reached\n");
   printf("%sEnding game loop.\n", SETCURSORLEFT);
+  if (extLibrary != NULL) dlclose(extLibrary);
   return 0;
 };
