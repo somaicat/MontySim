@@ -16,8 +16,8 @@ monty.o: monty.c
 	gcc -c ./monty.c $(FLAGS) -o monty.o
 
 ncurses.so: ncurses.c
-	gcc -c ./ncurses.c $(FLAGS) -fpic -lncurses -o ncurses.o
-	gcc -shared -lncurses -o ./ncurses.so ./ncurses.o
+	gcc -fPIC -c ./ncurses.c 
+	gcc -shared -o ./ncurses.so ./ncurses.o -lncurses
 
 clean:
 	rm ./*.o ./monty ./*.so
