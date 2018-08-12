@@ -4,10 +4,10 @@ FILES = monty.o
 all: monty ncurses.so
 
 debug: FLAGS += -g
-debug: monty
+debug: monty ncurses.so
 
 release: FLAGS += -Wall -O3
-release: monty
+release: monty ncurses.so
 
 monty: $(FILES)
 	gcc -rdynamic $(FILES) $(FLAGS) -o ./monty
