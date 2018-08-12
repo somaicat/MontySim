@@ -1,4 +1,4 @@
-FLAGS = -lpthread
+FLAGS = -lpthread -ldl
 
 all: monty
 
@@ -9,7 +9,7 @@ release: FLAGS += -Wall -O3
 release: monty
 
 monty: monty.o
-	gcc monty.o $(FLAGS) -o ./monty
+	gcc -rdynamic monty.o $(FLAGS) -o ./monty
 
 monty.o: monty.c
 	gcc -c ./monty.c $(FLAGS) -o monty.o
