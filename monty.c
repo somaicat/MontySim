@@ -12,6 +12,7 @@ int timer=0;
 char *bgColor = C_DOSBG;
 GameThread *gameThreadTable[MAXCORES] = {0};
 void (*ExtOutputLoop)() = NULL;
+time_t startTime = 0;
 
 void sighandler(int sig) {
   killtime=sig; // Using a global for now in preparation for future threading support
@@ -101,7 +102,7 @@ void IntOutputLoop() {
   int num;
   GameScore *score;
   struct timespec ts;
-  time_t startTime = time(NULL);
+  if (startTime == 0) startTime = time(NULL);
   int secondsPast;
   int rt_Hours, rt_Minutes, rt_Seconds;
   ts.tv_sec = refreshRate/1000;

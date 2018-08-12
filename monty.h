@@ -56,6 +56,7 @@ extern int gameDelay;
 extern int numDecPoints;
 extern int timer;
 extern char *bgColor;
+extern time_t startTime;
 
 // Structures
 typedef struct GameScore { 

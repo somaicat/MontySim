@@ -53,7 +53,7 @@ void ExtOutputLoop() {
   int secondsPast;
   int num;
   int rt_Hours, rt_Minutes, rt_Seconds;
-  time_t startTime = time(NULL);
+  startTime = time(NULL);
   ts.tv_sec = refreshRate/1000;
   ts.tv_nsec = (refreshRate-(refreshRate/1000*1000))*1000000;
   GameScore *score;
