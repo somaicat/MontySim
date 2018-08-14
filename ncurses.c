@@ -117,7 +117,7 @@ void ExtOutputLoop() {
     box(nwins.threadWin, 0,0);
     box(nwins.totalWin, 0,0);
 
-    sprintf(buf, " Total Games - %d ", totalGames);
+    sprintf(buf, " Total Games - %'llu ", totalGames);
     mvwprintw(nwins.totalWin, 0,x-strlen(buf)-2,"%s",buf);
 
     mvwprintw(nwins.threadWin, 0,2,"Thread Outputs");
