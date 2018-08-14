@@ -13,9 +13,9 @@ struct NCursesWindows nwins;
 void InitNCurses() {
   curs_set(0);					// Turn off cursor
   start_color();				// Turn on colors NOTE: add conditional in case colors not supported
-  init_pair(1, COLOR_WHITE, COLOR_CYAN);	// Add white on blue color pair
+  init_pair(1, COLOR_GREEN, COLOR_BLACK);	// Add white on blue color pair
   init_pair(2, COLOR_WHITE, COLOR_RED);		// Add white on red color pair
-  init_pair(3, COLOR_GREEN, COLOR_BLACK);	// Add white on blue color pair
+  init_pair(3, COLOR_WHITE, COLOR_BLACK);	// Add white on blue color pair
 //  attron(COLOR_PAIR(1));			// Turn on WoB color pair
 }
 
@@ -23,8 +23,8 @@ void BuildWindows() {
   int y, x;
   getmaxyx(nwins.win, y, x);				// Get max window size
   nwins.titleWin = newwin(1,x,0,0);			// Create title window
-  nwins.threadWin = subwin(nwins.win,y-6, x, 6, 0);		// Create thread info window
-  nwins.totalWin = subwin(nwins.win,5, x, 1, 0);		// Create totals Window
+  nwins.threadWin = subwin(nwins.win,y-5, x, 5, 0);		// Create thread info window
+  nwins.totalWin = subwin(nwins.win,4, x, 1, 0);		// Create totals Window
   wbkgd(nwins.titleWin, COLOR_PAIR(2)|A_BOLD);	// Activate title window colors
   wbkgd(nwins.win, COLOR_PAIR(1)|A_BOLD);		// Activate main window colors
   wbkgd(nwins.threadWin, COLOR_PAIR(3)|A_BOLD);	// Activate thread window colors
@@ -82,19 +82,19 @@ void ExtOutputLoop() {
     wmove(nwins.threadWin, 2,0);
     for (num=0; num < MAXCORES && gameThreadTable[num] != NULL; num++) {
       score = &gameThreadTable[num]->score;
-      wprintw(nwins.threadWin, " [Thread %d]\n", num+1);
-      wprintw(nwins.threadWin, " Switching:");
+      wprintw(nwins.threadWin, "  [Thread %d]\n", num+1);
+      wprintw(nwins.threadWin, "  Switching:");
       getyx(nwins.threadWin, offsety, offsetx);
       mvwprintw(nwins.threadWin, offsety, x/4, "Wins: %'llu", score->numWonWSwitch);
       mvwprintw(nwins.threadWin, offsety, x/2, "Loses: %'llu", score->numLostWSwitch);
-      sprintf(buf, "Odds: %.*f%%\n", numDecPoints, score->percentWonWSwitch);
+      sprintf(buf, "Odds: %.*f%% \n", numDecPoints, score->percentWonWSwitch);
       mvwprintw(nwins.threadWin, offsety, x-(strlen(buf)), "%s", buf);
 
-      wprintw(nwins.threadWin, " Non Switching:");
+      wprintw(nwins.threadWin, "  Non Switching:");
       getyx(nwins.threadWin, offsety, offsetx);
       mvwprintw(nwins.threadWin, offsety, x/4, "Wins: %'llu", score->numWonWoSwitch);
       mvwprintw(nwins.threadWin, offsety, x/2, "Loses: %'llu", score->numLostWoSwitch);
-      sprintf(buf, "Odds: %.*f%%\n", numDecPoints, score->percentWonWoSwitch);
+      sprintf(buf, "Odds: %.*f%% \n", numDecPoints, score->percentWonWoSwitch);
       mvwprintw(nwins.threadWin, offsety, x-(strlen(buf)), "%s", buf);
 
       totalNumWonWSwitch+=score->numWonWSwitch;
@@ -106,21 +106,21 @@ void ExtOutputLoop() {
     totalPercentWonWoSwitch = ((double)totalNumWonWoSwitch / ((double)totalNumWonWoSwitch+(double)totalNumLostWoSwitch)) * 100.0f;
     totalGames = totalNumWonWSwitch + totalNumWonWoSwitch + totalNumLostWSwitch + totalNumLostWoSwitch;
 
-    mvwprintw(nwins.totalWin, 1,1,"Total Percentages:");
-    sprintf(buf, "Won: %'llu Lost: %'llu", totalNumWonWSwitch, totalNumLostWSwitch);
+//    mvwprintw(nwins.totalWin, 1,1,"Total Percentages:");
+    sprintf(buf, "Won: %'llu Lost: %'llu ", totalNumWonWSwitch, totalNumLostWSwitch);
+    mvwprintw(nwins.totalWin, 1,x-strlen(buf)-1, "%s", buf);
+    mvwprintw(nwins.totalWin, 1,1," Switching Wins: %.*f%%", numDecPoints, totalPercentWonWSwitch);
+    sprintf(buf, "Won: %'llu Lost: %'llu ", totalNumWonWoSwitch, totalNumLostWoSwitch);
     mvwprintw(nwins.totalWin, 2,x-strlen(buf)-1, "%s", buf);
-    mvwprintw(nwins.totalWin, 2,1,"Switching Wins: %.*f%%", numDecPoints, totalPercentWonWSwitch);
-    sprintf(buf, "Won: %'llu Lost: %'llu", totalNumWonWoSwitch, totalNumLostWoSwitch);
-    mvwprintw(nwins.totalWin, 3,x-strlen(buf)-1, "%s", buf);
-    mvwprintw(nwins.totalWin, 3,1,"Non Switching Wins: %.*f%%", numDecPoints, totalPercentWonWoSwitch);
+    mvwprintw(nwins.totalWin, 2,1," Non Switching Wins: %.*f%%", numDecPoints, totalPercentWonWoSwitch);
     box(nwins.threadWin, 0,0);
     box(nwins.totalWin, 0,0);
-    mvwprintw(nwins.totalWin, 0,2,"Results");
+    mvwprintw(nwins.totalWin, 0,2," Totals ");
 
-    sprintf(buf, " Total Games - %'llu ", totalGames);
+    sprintf(buf, " Games - %'llu ", totalGames);
     mvwprintw(nwins.totalWin, 0,x-strlen(buf)-2,"%s",buf);
 
-    mvwprintw(nwins.threadWin, 0,2,"Thread Outputs");
+    mvwprintw(nwins.threadWin, 0,2," Thread Outputs ");
     sprintf(buf, " Total Threads - %d ", nCpus);
     mvwprintw(nwins.threadWin, 0,x-strlen(buf)-2,"%s", buf);
     wrefresh(nwins.totalWin);
