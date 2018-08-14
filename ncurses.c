@@ -123,8 +123,8 @@ void ExtOutputLoop() {
     mvwprintw(nwins.threadWin, 0,2," Thread Outputs ");
     sprintf(buf, " Total Threads - %d ", nCpus);
     mvwprintw(nwins.threadWin, 0,x-strlen(buf)-2,"%s", buf);
-    wrefresh(nwins.totalWin);
     wrefresh(nwins.titleWin);
+    wrefresh(nwins.totalWin);
     wrefresh(nwins.threadWin);
     nanosleep(&ts, NULL);
   }
