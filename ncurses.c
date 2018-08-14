@@ -91,7 +91,7 @@ void ExtOutputLoop() {
       sprintf(buf, "Odds: %.*f%%\n", numDecPoints, score->percentWonWSwitch);
       mvwprintw(nwins.threadWin, offsety, x-(strlen(buf)), "%s", buf);
 
-      wprintw(nwins.threadWin, " Not Switching:");
+      wprintw(nwins.threadWin, " Non Switching:");
       getyx(nwins.threadWin, offsety, offsetx);
       mvwprintw(nwins.threadWin, offsety, x/4, "Wins: %'llu", score->numWonWoSwitch);
       mvwprintw(nwins.threadWin, offsety, x/2, "Loses: %'llu", score->numLostWoSwitch);
@@ -113,7 +113,7 @@ void ExtOutputLoop() {
     mvwprintw(nwins.totalWin, 2,1,"Switching Wins: %.*f%%", numDecPoints, totalPercentWonWSwitch);
     sprintf(buf, "Won: %'llu Lost: %'llu", totalNumWonWoSwitch, totalNumLostWoSwitch);
     mvwprintw(nwins.totalWin, 3,x-strlen(buf)-1, "%s", buf);
-    mvwprintw(nwins.totalWin, 3,1,"Non-Switching Wins: %.*f%%", numDecPoints, totalPercentWonWoSwitch);
+    mvwprintw(nwins.totalWin, 3,1,"Non Switching Wins: %.*f%%", numDecPoints, totalPercentWonWoSwitch);
     box(nwins.threadWin, 0,0);
 
     sprintf(buf, "Total Games - %d", totalGames);
