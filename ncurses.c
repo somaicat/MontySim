@@ -31,7 +31,6 @@ void BuildWindows() {
   scrollok(nwins.threadWin, TRUE);			// Turn on thread window scrolling
   wbkgd(nwins.totalWin, COLOR_PAIR(1)|A_BOLD);		// Activate total windows colors
   box(nwins.totalWin, 0,0);				// Draw total windows box
-  mvwprintw(nwins.totalWin, 0,2,"Results");
   mvwprintw(nwins.titleWin, 0,0,"Monty Hall Simulations Running");
 
   refresh();
@@ -116,6 +115,7 @@ void ExtOutputLoop() {
     mvwprintw(nwins.totalWin, 3,1,"Non Switching Wins: %.*f%%", numDecPoints, totalPercentWonWoSwitch);
     box(nwins.threadWin, 0,0);
     box(nwins.totalWin, 0,0);
+    mvwprintw(nwins.totalWin, 0,2,"Results");
 
     sprintf(buf, " Total Games - %'llu ", totalGames);
     mvwprintw(nwins.totalWin, 0,x-strlen(buf)-2,"%s",buf);
