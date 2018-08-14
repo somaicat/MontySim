@@ -14,7 +14,7 @@ void InitNCurses() {
   curs_set(0);					// Turn off cursor
   start_color();				// Turn on colors NOTE: add conditional in case colors not supported
   init_pair(1, COLOR_GREEN, COLOR_BLACK);	// Add white on blue color pair
-  init_pair(2, COLOR_WHITE, COLOR_RED);		// Add white on red color pair
+  init_pair(2, COLOR_WHITE, COLOR_CYAN);		// Add white on red color pair
   init_pair(3, COLOR_WHITE, COLOR_BLACK);	// Add white on blue color pair
 //  attron(COLOR_PAIR(1));			// Turn on WoB color pair
 }
