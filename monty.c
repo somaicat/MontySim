@@ -9,6 +9,8 @@ int refreshRate=100;
 int gameDelay=0;
 int numDecPoints=2;
 int timer=0;
+int nCpus=1;
+
 char *bgColor = C_DOSBG;
 GameThread *gameThreadTable[MAXCORES] = {0};
 void (*ExtOutputLoop)() = NULL;
@@ -146,10 +148,12 @@ void IntOutputLoop() {
 
 int main(int argc, char *argv[]) {
   int num;
-  int nCpus = get_nprocs();
   struct sigaction sigAct;
   char *localeStr = NULL;
   void *extLibrary;
+
+  nCpus=get_nprocs();
+
   while ((num = getopt(argc, argv, "hsSgaAp:t:d:T:")) != -1) {
     switch (num) {
       case 's':

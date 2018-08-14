@@ -115,11 +115,14 @@ void ExtOutputLoop() {
     mvwprintw(nwins.totalWin, 3,x-strlen(buf)-1, "%s", buf);
     mvwprintw(nwins.totalWin, 3,1,"Non Switching Wins: %.*f%%", numDecPoints, totalPercentWonWoSwitch);
     box(nwins.threadWin, 0,0);
+    box(nwins.totalWin, 0,0);
 
-    sprintf(buf, "Total Games - %d", totalGames);
+    sprintf(buf, " Total Games - %d ", totalGames);
     mvwprintw(nwins.totalWin, 0,x-strlen(buf)-2,"%s",buf);
 
     mvwprintw(nwins.threadWin, 0,2,"Thread Outputs");
+    sprintf(buf, " Total Threads - %d ", nCpus);
+    mvwprintw(nwins.threadWin, 0,x-strlen(buf)-2,"%s", buf);
     wrefresh(nwins.totalWin);
     wrefresh(nwins.titleWin);
     wrefresh(nwins.threadWin);

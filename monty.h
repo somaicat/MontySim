@@ -55,6 +55,7 @@ extern int refreshRate;
 extern int gameDelay;
 extern int numDecPoints;
 extern int timer;
+extern int nCpus;
 extern char *bgColor;
 extern time_t startTime;
 
