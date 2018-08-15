@@ -10,6 +10,7 @@ int gameDelay=0;
 int numDecPoints=2;
 int timer=0;
 int nCpus=1;
+int noLibraries=0;
 
 char *bgColor = C_DOSBG;
 GameThread *gameThreadTable[MAXCORES] = {0};
@@ -28,6 +29,7 @@ void PlayGame(GameThread *game) {
   int altDoor;
   int num;
   struct timespec ts;
+  const char *ContestantChoiceStr[] = {"\e[94mto stick with door\e[m", "\e[93mto change to door\e[m"};
 
   GameScore *score = &game->score;
 
@@ -149,69 +151,10 @@ void IntOutputLoop() {
 int main(int argc, char *argv[]) {
   int num;
   struct sigaction sigAct;
-  char *localeStr = NULL;
   void *extLibrary=NULL;
-  int noLibraries=0;
   nCpus=get_nprocs();
 
-  while ((num = getopt(argc, argv, "nhsSgaAp:t:d:T:")) != -1) {
-    switch (num) {
-      case 's':
-        verbose=1;
-        break;
-      case 'g':
-        stop=1;
-        break;
-      case 'n':
-        noLibraries=1;
-        break;
-      case 'S':
-        localeStr = setlocale(LC_NUMERIC, "");
-        break;
-      case 'T':
-        if (atoi(optarg) <= 0) {
-          ERRORRET(argv[0], "Time limit must be 1 second or more");
-        }
-        timer=atoi(optarg);
-        break;
-      case 'p':
-        numDecPoints = atoi(optarg);
-        if (numDecPoints > 10 || numDecPoints < 2) {
-          ERRORRET(argv[0], "Decimal points must be between 2 and 10");
-        }
-        break;
-      case 'a':
-        noAnsi=1;
-        break;
-      case 'A':
-        bgColor = C_RST; 
-        break;
-      case 'd':
-        gameDelay = atoi(optarg);
-        if (gameDelay <= 0) {
-          ERRORRET(argv[0], "Game delay must be above 0ms");
-        }
-        break;
-/*      case 'r':
-        refreshRate = atoi(optarg);
-        if (refreshRate <= 0) {
-          ERRORRET(argv[0], "Refresh rate must be above 0ms");
-        }
-        break;*/
-      case 't':
-        nCpus = atoi(optarg);
-        if (nCpus > 0 && nCpus <= MAXCORES) break; // If the argument is retarded, this conditional ensures that we won't break out of the switch and will fall through to the default and return
-        printf("%s: Thread number must be between 1 and %d\n", argv[0], MAXCORES); // Retard argument detected, falling through to return
-        ERRORSTR(argv[0]);
-        return 0;
-      default:
-        ERRORSTR(argv[0]);
-        return 0;
-      case 'h':
-        printf(helpStr, argv[0]);
-        return 0;
-    }
-  }
+  if (usage(argc,argv)) return 1;
   if (!noLibraries) {
     if ((extLibrary = dlopen("./uioutput.so", RTLD_NOW)) != NULL && (ExtOutputLoop = dlsym(extLibrary, "ExtOutputLoop")) != NULL) {
       printf("Found external output library\n");
@@ -230,7 +173,6 @@ int main(int argc, char *argv[]) {
   printf("Installing signal handler...\n");
   sigaction(SIGINT, &sigAct, NULL);
   sigaction(SIGALRM, &sigAct, NULL);
-  if (localeStr) printf("Setting locale to %s\n", localeStr);
 
   if (!verbose) {// no verbose, start multithreaded operation
     if (ExtOutputLoop == NULL) {

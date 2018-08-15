@@ -1,10 +1,8 @@
 LIBS = -lpthread -ldl
-FILES = monty.o
+FILES = monty.o usage.o
 OUTPUT = monty ncurses.so
 
-all: FLAGS = -O3
-all: $(OUTPUT)
-	@strip $(OUTPUT)
+all: release
 
 debug: FLAGS = -g
 debug: $(OUTPUT)
@@ -15,6 +13,9 @@ release: $(OUTPUT)
 
 monty: $(FILES)
 	gcc -rdynamic $(FILES) $(LIBS) $(FLAGS) -o ./monty
+
+usage.o: usage.c
+	gcc -c ./usage.c $(LIBS) $(FLAGS) -o usage.o
 
 monty.o: monty.c
 	gcc -c ./monty.c $(LIBS) $(FLAGS) -o monty.o
