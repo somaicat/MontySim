@@ -8,7 +8,7 @@ WINDOW *titleWin;
 WINDOW *win;
 } NCursesWindows;
 
-struct NCursesWindows nwins;
+struct NCursesWindows nwins={0};
 
 void InitNCurses() {
   curs_set(0);					// Turn off cursor
@@ -31,7 +31,6 @@ void BuildWindows() {
   scrollok(nwins.threadWin, TRUE);			// Turn on thread window scrolling
   wbkgd(nwins.totalWin, COLOR_PAIR(1)|A_BOLD);		// Activate total windows colors
   box(nwins.totalWin, 0,0);				// Draw total windows box
-  mvwprintw(nwins.titleWin, 0,0,"Monty Hall Simulations Running");
 
   refresh();
   wrefresh(nwins.threadWin);
@@ -45,7 +44,8 @@ void ExtOutputLoop() {
   unsigned long long totalNumWonWSwitch, totalNumWonWoSwitch, totalNumLostWSwitch, totalNumLostWoSwitch;
   unsigned long long totalGames;
   struct timespec ts;
-  int y, x;
+  int y=0;
+  int x=0;
   int secondsPast;
   int num;
   int rt_Hours, rt_Minutes, rt_Seconds;
@@ -62,9 +62,16 @@ void ExtOutputLoop() {
 
   InitNCurses();
   BuildWindows();
-  getmaxyx(nwins.win, y, x);
 
   while (!killtime) {
+    offsety=y;offsetx=x;
+    getmaxyx(nwins.win, y, x);
+    if (offsety != y || offsetx != x) { // Since x and y start initalized to 0, this will always run at least once
+      wresize(nwins.threadWin, y-5,x);
+      wclear(nwins.totalWin);
+      wclear(nwins.titleWin);
+      mvwprintw(nwins.titleWin, 0,0,"Monty Hall Simulations Running");
+    }
     totalNumWonWSwitch=0;
     totalNumWonWoSwitch=0;
     totalNumLostWSwitch=0;
