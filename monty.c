@@ -49,6 +49,7 @@ void PlayGame(GameThread *game) {
     if (verbose) {
       printf("Score: (%'llu:%'llu Wins to loss \\w switch, %'llu:%'llu wins to loss \\wo switch)\n", score->numWonWSwitch, score->numLostWSwitch, score->numWonWoSwitch, score->numLostWoSwitch);
       printf("Winning percentage: %.*f%% \\w switch, %.*f%% \\wo switch\n", numDecPoints, score->percentWonWSwitch, numDecPoints, score->percentWonWoSwitch); 
+      printf("Total games: %'llu\n", score->numWonWSwitch+score->numWonWoSwitch+score->numLostWSwitch+score->numLostWoSwitch);
       printf(" - Game started, (winning door is %d)\n", correctDoor);
       printf(" - Contestant chose door %d\n", chosenDoor);
     }
