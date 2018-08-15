@@ -35,11 +35,11 @@ const static char *helpStr = \
 		"Monty Hall game simulation\n\n"\
 		"  -p <points>\tSpecify number of decimal points displayed (between 2 and 10)\n"\
 		"  -d <delay>\tDelay each game by number of ms\n"\
-		"  -T <timeout>\tStop games after number of seconds\n"\
 		"  -S\t\tShow thousands seperators\n"\
 		"  -h\t\tDisplays this help informaion\n"\
 		"\n--------- Multithreaded options\n"\
 		"  -t <threads>\tManually set number of threads to use\n"\
+		"  -T <timeout>\tStop games after number of seconds\n"\
 		"  -A\t\tNo ANSI background colors (foreground colors still exist if supported)\n"\
 		"  -n\t\tDon't load any external UI libraries\n"\
 		"\n--------- Singlethreaded options\n"\
