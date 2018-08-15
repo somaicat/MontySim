@@ -41,6 +41,7 @@ const static char *helpStr = \
 		"\n--------- Multithreaded options\n"\
 		"  -t <threads>\tManually set number of threads to use\n"\
 		"  -A\t\tNo ANSI background colors (foreground colors still exist if supported)\n"\
+		"  -n\t\tDon't load any external UI libraries\n"\
 		"\n--------- Singlethreaded options\n"\
 		"  -s\t\tSingle threaded (verbose) mode\n"\
 		"  -g\t\tWait for enter at the end of each game\n"\

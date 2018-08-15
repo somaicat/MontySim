@@ -150,17 +150,20 @@ int main(int argc, char *argv[]) {
   int num;
   struct sigaction sigAct;
   char *localeStr = NULL;
-  void *extLibrary;
-
+  void *extLibrary=NULL;
+  int noLibraries=0;
   nCpus=get_nprocs();
 
-  while ((num = getopt(argc, argv, "hsSgaAp:t:d:T:")) != -1) {
+  while ((num = getopt(argc, argv, "nhsSgaAp:t:d:T:")) != -1) {
     switch (num) {
       case 's':
         verbose=1;
         break;
       case 'g':
         stop=1;
+        break;
+      case 'n':
+        noLibraries=1;
         break;
       case 'S':
         localeStr = setlocale(LC_NUMERIC, "");
@@ -209,16 +212,19 @@ int main(int argc, char *argv[]) {
         return 0;
     }
   }
-
-  if ((extLibrary = dlopen("./ncurses.so", RTLD_NOW)) == NULL)
-    printf("NCurses support not found: %s\n",dlerror());
-  else if ((ExtOutputLoop = dlsym(extLibrary, "ExtOutputLoop")) == NULL) {
-   printf("Ncurses support library corrupt\n");
-   getchar();
+  if (!noLibraries) {
+    if ((extLibrary = dlopen("./uioutput.so", RTLD_NOW)) != NULL && (ExtOutputLoop = dlsym(extLibrary, "ExtOutputLoop")) != NULL) {
+      printf("Found external output library\n");
+    }
+    else if ((extLibrary = dlopen("./ncurses.so", RTLD_NOW)) == NULL)
+      printf("%s\nncurses support not found\n",dlerror());
+    else if ((ExtOutputLoop = dlsym(extLibrary, "ExtOutputLoop")) == NULL) {
+      printf("ncurses library corrupt, defaulting to internal UI\n");
+      getchar();
+    }
+    else
+      printf("Found ncurses library\n");
   }
-  else
-    printf("NCurses support found\n");
-
   memset(&sigAct, 0, sizeof(struct sigaction));
   sigAct.sa_handler = sighandler;
   printf("Installing signal handler...\n");
