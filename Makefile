@@ -1,23 +1,28 @@
-FLAGS = -lpthread -ldl
+LIBS = -lpthread -ldl
 FILES = monty.o
+OUTPUT = monty ncurses.so
 
-all: monty ncurses.so
+all: FLAGS = -O3
+all: $(OUTPUT)
+	@strip $(OUTPUT)
 
-debug: FLAGS += -g
-debug: monty ncurses.so
+debug: FLAGS = -g
+debug: $(OUTPUT)
 
-release: FLAGS += -Wall -O3
-release: monty ncurses.so
+release: FLAGS = -Wall -O3
+release: $(OUTPUT)
+	@strip $(OUTPUT)
 
 monty: $(FILES)
-	gcc -rdynamic $(FILES) $(FLAGS) -o ./monty
+	gcc -rdynamic $(FILES) $(LIBS) $(FLAGS) -o ./monty
 
 monty.o: monty.c
-	gcc -c ./monty.c $(FLAGS) -o monty.o
+	gcc -c ./monty.c $(LIBS) $(FLAGS) -o monty.o
 
 ncurses.so: ncurses.c
-	gcc -fPIC -c ./ncurses.c 
-	gcc -shared -o ./ncurses.so ./ncurses.o -lncurses
+	gcc $(FLAGS) -fPIC -c ./ncurses.c 
+	gcc $(FLAGS) -shared -o ./ncurses.so ./ncurses.o -lncurses
 
 clean:
-	rm ./*.o ./monty ./*.so
+	@echo "Deleting object files"
+	@rm ./*.o ./monty ./*.so
