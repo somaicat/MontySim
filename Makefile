@@ -4,7 +4,7 @@ OUTPUT = monty ncurses.so
 
 all: release
 
-debug: FLAGS = -g
+debug: FLAGS = -ggdb
 debug: $(OUTPUT)
 
 release: FLAGS = -Wall -O3
