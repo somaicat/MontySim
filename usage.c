@@ -34,9 +34,6 @@ int usage(int argc, char *argv[]) {
       case 'a':
         noAnsi=1;
         break;
-      case 'A':
-        bgColor = C_RST; 
-        break;
       case 'd':
         gameDelay = atoi(optarg);
         if (gameDelay <= 0) {

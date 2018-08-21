@@ -1,7 +1,7 @@
 #define ERRORSTR(s) printf(failStr, s)
 #define ERRORRET(t, s) printf("%s: %s\n", t, s); ERRORSTR(t); return 1
 
-#define OPTS "nhsSgaAp:t:d:T:"
+#define OPTS "nhsSgap:t:d:T:"
 
 // Constant strings
 const static char *failStr = "Use %s -h for more information\n";
@@ -15,7 +15,6 @@ const static char *helpStr = \
 		"\n--------- Multithreaded options\n"\
 		"  -t <threads>\tManually set number of threads to use\n"\
 		"  -T <timeout>\tStop games after number of seconds\n"\
-		"  -A\t\tNo ANSI background colors (foreground colors still exist if supported)\n"\
 		"  -n\t\tDon't load any external UI libraries\n"\
 		"\n--------- Singlethreaded options\n"\
 		"  -s\t\tSingle threaded (verbose) mode\n"\

@@ -12,7 +12,7 @@ int timer=0;
 int nCpus=1;
 int noLibraries=0;
 
-char *bgColor = C_DOSBG;
+char *bgColor = C_RST;
 GameThread *gameThreadTable[MAXCORES] = {0};
 void (*ExtOutputLoop)() = NULL;
 time_t startTime = 0;
