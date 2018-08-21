@@ -16,6 +16,7 @@ void InitNCurses() {
   init_pair(1, COLOR_GREEN, COLOR_BLACK);	// Add white on blue color pair
   init_pair(2, COLOR_WHITE, COLOR_CYAN);		// Add white on red color pair
   init_pair(3, COLOR_WHITE, COLOR_BLACK);	// Add white on blue color pair
+  init_pair(4, COLOR_YELLOW, COLOR_BLACK);		// Important Text Color
 //  attron(COLOR_PAIR(1));			// Turn on WoB color pair
 }
 
@@ -124,8 +125,10 @@ void ExtOutputLoop() {
     box(nwins.totalWin, 0,0);
     mvwprintw(nwins.totalWin, 0,2," Totals ");
 
-    sprintf(buf, " Games - %'llu ", totalGames);
+    wattron(nwins.totalWin, COLOR_PAIR(4)|A_BOLD);			// Turn on temporary colors
+    sprintf(buf, " Completed Games - %'llu ", totalGames);
     mvwprintw(nwins.totalWin, 0,x-strlen(buf)-2,"%s",buf);
+    wattroff(nwins.totalWin, COLOR_PAIR(4)|A_BOLD);			// Turn off temporary colors
 
     mvwprintw(nwins.threadWin, 0,2," Thread Outputs ");
     sprintf(buf, " Total Threads - %d ", nCpus);
