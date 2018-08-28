@@ -12,6 +12,7 @@ int timer=0;
 int nCpus=1;
 int noLibraries=0;
 int freezeGames=0;
+char saveSessionFile[MAXFILELEN];
 
 char *bgColor = C_RST;
 GameThread *gameThreadTable[MAXCORES] = {0};
@@ -36,6 +37,8 @@ void PlayGame(GameThread *game) {
 
   ts.tv_sec = gameDelay/1000;
   ts.tv_nsec = (gameDelay-(gameDelay/1000*1000))*1000000; // This works by first taking the delay, say.. 1500, it divides and multiplies by 1000, which since C rounds down and this is an integer, just drops it to the nearest 1000. Then it uses that to subtract from the original number  (1500-1000) to get 500, and then multiplies to get nanoseconds, probably a better way to do this.
+
+  saveSessionFile[0] = 0;
 
   for (num=0; !killtime;num++) {
     if (freezeGames) {

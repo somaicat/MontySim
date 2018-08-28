@@ -1,5 +1,5 @@
 LIBS = -lpthread -ldl
-FILES = monty.o usage.o
+FILES = monty.o usage.o session.o
 OUTPUT = monty ncurses.so
 
 all: release
@@ -16,6 +16,9 @@ monty: $(FILES)
 
 usage.o: usage.c
 	gcc -c ./usage.c $(LIBS) $(FLAGS) -o usage.o
+
+session.o: session.c
+	gcc -c ./session.c $(LIBS) $(FLAGS) -o session.o
 
 monty.o: monty.c
 	gcc -c ./monty.c $(LIBS) $(FLAGS) -o monty.o

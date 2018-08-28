@@ -34,6 +34,12 @@ int usage(int argc, char *argv[]) {
       case 'a':
         noAnsi=1;
         break;
+      case 'o':
+        if (strlen(optarg) >= MAXFILELEN) {
+          ERRORRET(argv[0], "Session file length too long");
+        }
+        strcpy(saveSessionFile, optarg);
+        break;
       case 'd':
         gameDelay = atoi(optarg);
         if (gameDelay <= 0) {

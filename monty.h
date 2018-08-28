@@ -9,6 +9,8 @@
 #include <locale.h>
 #include <dlfcn.h>
 
+#define MAXFILELEN 512
+
 #define CLEARSCR "\033[2J"
 #define ZEROCURSOR "\033[H"
 #define SETCURSORLEFT "\033[10D"
@@ -35,6 +37,7 @@ extern int numDecPoints;
 extern int timer;
 extern int nCpus;
 extern int noLibraries;
+extern char saveSessionFile[MAXFILELEN];
 extern char *bgColor;
 extern time_t startTime;
 extern int freezeGames;
