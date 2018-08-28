@@ -1,5 +1,5 @@
-#define ERRORSTR(s) printf(failStr, s)
-#define ERRORRET(t, s) printf("%s: %s\n", t, s); ERRORSTR(t); return 1
+#define ERRORSTR(s) fprintf(stderr, failStr, s)
+#define ERRORRET(t, s) fprintf(stderr, "%s: %s\n", t, s); ERRORSTR(t); return 1
 
 #define OPTS "nhsSgap:t:d:T:"
 

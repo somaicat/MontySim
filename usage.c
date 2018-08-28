@@ -49,14 +49,14 @@ int usage(int argc, char *argv[]) {
       case 't':
         nCpus = atoi(optarg);
         if (nCpus > 0 && nCpus <= MAXCORES) break; // If the argument is retarded, this conditional ensures that we won't break out of the switch and will fall through to the default and return
-        printf("%s: Thread number must be between 1 and %d\n", argv[0], MAXCORES); // Retard argument detected, falling through to return
+        fprintf(stderr, "%s: Thread number must be between 1 and %d\n", argv[0], MAXCORES); // Retard argument detected, falling through to return
         ERRORSTR(argv[0]);
         return 1;
       default:
         ERRORSTR(argv[0]);
         return 1;
       case 'h':
-        printf(helpStr, argv[0]);
+        fprintf(stderr, helpStr, argv[0]);
         return 1;
     }
   }
