@@ -62,6 +62,9 @@ typedef struct GameThread {
 extern int usage(int argc, char *argv[]);
 extern void IntOutputLoop();
 
+// Session functions
+extern void SaveSession(char *file);
+
 // Global Thread Table
 extern GameThread *gameThreadTable[MAXCORES]; 
 
