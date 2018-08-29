@@ -76,7 +76,7 @@ void ExtOutputLoop() {
       }
     }
 
-    SaveSession("save.mty");
+//    SaveSession("save.mty");
     offsety=y;offsetx=x;
     getmaxyx(nwins.win, y, x);
     if (offsety != y || offsetx != x) { // Since x and y start initalized to 0, this will always run at least once

@@ -64,6 +64,7 @@ extern void IntOutputLoop();
 
 // Session functions
 extern void SaveSession(char *file);
+extern int LoadSession(char *file, int numSessions);
 
 // Global Thread Table
 extern GameThread *gameThreadTable[MAXCORES]; 

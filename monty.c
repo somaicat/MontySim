@@ -94,8 +94,8 @@ int SeedGame(GameThread *game) {
   return 0;
 }
 
-GameThread *StartGame() {
-  GameThread *game = calloc(1,sizeof(GameThread));
+GameThread *StartGame(GameThread *gameThread) {
+  GameThread *game = (gameThread == NULL) ? calloc(1,sizeof(GameThread)) : gameThread;
   SeedGame(game);
   if (verbose)
     PlayGame(game);
@@ -187,8 +187,19 @@ int main(int argc, char *argv[]) {
     if (ExtOutputLoop == NULL) {
       printf("%s%s", bgColor, CLEARSCR);
     }
-    for (num=0;num<nCpus && num < MAXCORES ;num++) { // Is this future proofing? maybe...
-      gameThreadTable[num] = StartGame();
+    if (saveSessionFile[0] != 0) {
+      if (LoadSession(saveSessionFile, nCpus) != 0) {
+        printf("Failed to load %s\n", saveSessionFile);
+        return -1;
+      }
+      for (num=0;num<nCpus && num < MAXCORES ;num++) { 
+         StartGame(gameThreadTable[num]);
+      }
+    }
+    else {
+      for (num=0;num<nCpus && num < MAXCORES ;num++) { // Is this future proofing? maybe...
+        gameThreadTable[num] = StartGame(NULL);
+      }
     }
     if (ExtOutputLoop == NULL)
       IntOutputLoop();
@@ -202,7 +213,7 @@ int main(int argc, char *argv[]) {
   else { // We're gonna run single threaded (slow) mode
     bgColor = C_RST;
     if (!noAnsi) printf(CLEARSCR);
-    gameThreadTable[0] = StartGame();
+    gameThreadTable[0] = StartGame(NULL);
     free(gameThreadTable[0]);
   }
   if (killtime == SIGALRM) printf("Timeout was reached\n");

@@ -1,17 +1,23 @@
 #include "monty.h"
-int LoadSession(char *file) {
+int LoadSession(char *file, int numSessions) {
   GameThread *loadedGameTable[MAXCORES] = {0};
   GameScore gameScoreEntry = {0};
   FILE *fp;
   int i;
   if ((fp = fopen(file, "r")) == NULL) return -1;
 
-  for (i=0; fread(&gameScoreEntry, sizeof(GameScore), 1, fp) == sizeof(GameScore) ;i++) {
+  for (i=0; fread(&gameScoreEntry, sizeof(GameScore), 1, fp) == 1;i++) {
     loadedGameTable[i] = calloc(1, sizeof(GameThread));
-    loadedGameTable->score = gameScoreEntry;
+    loadedGameTable[i]->score = gameScoreEntry;
   }
-
   fclose(fp);
+  if (i != numSessions) {
+    for(;i>=0; free(loadedGameTable[i--]));
+    return 1;
+  }
+  for(;i>=0;gameThreadTable[i] = loadedGameTable[i]) {
+    i--;
+  }
   return 0;
 }
 
