@@ -2,17 +2,19 @@
 int LoadSession(char *file, int numSessions) {
   GameThread *loadedGameTable[MAXCORES] = {0};
   GameScore gameScoreEntry = {0};
+  char chk[4];
   FILE *fp;
   int i;
   if ((fp = fopen(file, "r")) == NULL) return -1;
+  if (!(fread(chk, 4, 1, fp) == 1 && !strcmp(chk,FILECHK))) return -2; // Failed check
 
-  for (i=0; fread(&gameScoreEntry, sizeof(GameScore), 1, fp) == 1;i++) {
+  for (i=0; fread(&gameScoreEntry, sizeof(GameScore), 1, fp) == 1 && i < MAXCORES;i++) {
     loadedGameTable[i] = calloc(1, sizeof(GameThread));
     loadedGameTable[i]->score = gameScoreEntry;
   }
   fclose(fp);
   if (i != numSessions) {
-    for(;i>=0; free(loadedGameTable[i--]));
+    for(i=0;loadedGameTable[i] != NULL && i < MAXCORES; free(loadedGameTable[i++]));
     return 1;
   }
   for(;i>=0;gameThreadTable[i] = loadedGameTable[i]) {
@@ -26,6 +28,7 @@ void SaveSession(char *file) {
   int i;
   if ((fp = fopen(file, "w")) == NULL) return;
 
+  fwrite(FILECHK, 4, 1, fp);
   for (i=0; i<MAXCORES && gameThreadTable[i] != NULL;i++) {
     fwrite(&gameThreadTable[i]->score, sizeof(GameScore), 1, fp);
   }

@@ -9,6 +9,7 @@
 #include <locale.h>
 #include <dlfcn.h>
 
+#define FILECHK "MNTY" // NOTE: Currently, this MUST be 4 characters and ONLY 4 characters. It's hardcoded. 
 #define MAXFILELEN 512
 
 #define CLEARSCR "\033[2J"

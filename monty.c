@@ -188,9 +188,11 @@ int main(int argc, char *argv[]) {
       printf("%s%s", bgColor, CLEARSCR);
     }
     if (saveSessionFile[0] != 0) {
-      if (LoadSession(saveSessionFile, nCpus) != 0) {
-        printf("Failed to load %s\n", saveSessionFile);
-        return -1;
+      switch (LoadSession(saveSessionFile, nCpus)) {
+        default:break;
+        case -1: printf("Unable to open session file\n");return -1;
+        case -2: printf("Session file corrupt\n"); return -1;
+        case 1:  printf("Session file doesn't contain %d threads\n", nCpus); return -1;
       }
       for (num=0;num<nCpus && num < MAXCORES ;num++) { 
          StartGame(gameThreadTable[num]);
