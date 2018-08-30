@@ -37,6 +37,8 @@ void BuildWindows() {
   wrefresh(nwins.threadWin);
   wrefresh(nwins.titleWin);
   wrefresh(nwins.totalWin);
+  noecho();
+  nodelay(nwins.win, TRUE);
 }
 
 void ExtOutputLoop() {
@@ -56,7 +58,7 @@ void ExtOutputLoop() {
   GameScore *score;
   char buf[256];
   int offsetx,offsety;
-
+  int key;
   if ((nwins.win = initscr()) == NULL) {
   printf("Initialization of ncurses failed!\n");
   }
@@ -65,6 +67,15 @@ void ExtOutputLoop() {
   BuildWindows();
 
   while (!killtime) {
+    if ((key = getch()) != ERR) { // A key has been pressed
+      switch (key) {
+        case 'Q':
+        case 'q': killtime=1;break;
+        case 'F': 
+        case 'f': freezeGames = !freezeGames; break;
+      }
+    }
+
     offsety=y;offsetx=x;
     getmaxyx(nwins.win, y, x);
     if (offsety != y || offsetx != x) { // Since x and y start initalized to 0, this will always run at least once

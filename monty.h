@@ -37,6 +37,7 @@ extern int nCpus;
 extern int noLibraries;
 extern char *bgColor;
 extern time_t startTime;
+extern int freezeGames;
 
 // Structures
 typedef struct GameScore { 
