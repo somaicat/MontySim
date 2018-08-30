@@ -73,10 +73,11 @@ void ExtOutputLoop() {
         case 'q': killtime=1;break;
         case 'F': 
         case 'f': freezeGames = !freezeGames; break;
+        case 'S':
+        case 's': SaveSession("save.mty"); break;
       }
     }
 
-//    SaveSession("save.mty");
     offsety=y;offsetx=x;
     getmaxyx(nwins.win, y, x);
     if (offsety != y || offsetx != x) { // Since x and y start initalized to 0, this will always run at least once
