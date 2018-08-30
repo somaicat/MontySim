@@ -150,6 +150,7 @@ void ExtOutputLoop() {
     nanosleep(&ts, NULL);
   }
   endwin();
+  printf(CLEARSCR);
   IntOutputLoop(); // Call the non-ncurses monitor code. It'll give one listing of the results before finishing since killtime has been reached. Allowing us to see the results after ncurses display stops
 
   return;
