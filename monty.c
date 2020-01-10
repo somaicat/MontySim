@@ -145,6 +145,7 @@ void IntOutputLoop() {
       totalGames = totalNumWonWSwitch + totalNumWonWoSwitch + totalNumLostWSwitch + totalNumLostWoSwitch;
       printf("\nTotal percentages %.*f%% won switching, %.*f%% won without switching\n", numDecPoints,totalPercentWonWSwitch, numDecPoints, totalPercentWonWoSwitch);
       printf("Total games played: %'llu\n",totalGames);
+      printf("Games per second: %'llu\n", (secondsPast != 0) ? (totalGames/ secondsPast) : 0);
       totalNumWonWSwitch=0;
       totalNumWonWoSwitch=0;
       totalNumLostWSwitch=0;

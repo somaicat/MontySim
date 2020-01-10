@@ -137,8 +137,10 @@ void ExtOutputLoop() {
     mvwprintw(nwins.totalWin, 0,2," Totals ");
 
     wattron(nwins.totalWin, COLOR_PAIR(4)|A_BOLD);			// Turn on temporary colors
-    sprintf(buf, " Completed Games - %'llu ", totalGames);
+    sprintf(buf, " Completed Games - %'llu", totalGames);
     mvwprintw(nwins.totalWin, 0,x-strlen(buf)-2,"%s",buf);
+    sprintf(buf, " Games per second - %'llu", (secondsPast != 0) ? (totalGames/secondsPast) : 0);
+    mvwprintw(nwins.totalWin, 3,x-strlen(buf)-2,"%s",buf);
     wattroff(nwins.totalWin, COLOR_PAIR(4)|A_BOLD);			// Turn off temporary colors
 
     mvwprintw(nwins.threadWin, 0,2," Thread Outputs ");
