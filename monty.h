@@ -25,7 +25,7 @@
 #define C_DOSFG "\e[31;47m"
 
 // Globals 
-extern int killtime;
+extern volatile sig_atomic_t killtime;
 extern int verbose;
 extern int noAnsi;
 extern int stop;

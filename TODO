@@ -1,4 +1,5 @@
 There are potential problems with the killtime (and stoptime) variables being used for thread syncronization. As it stands it should work on most systems, but really at the very least they should probably be switched out for some sort of atomic primitive. I think C11 has something for this.
+Look into switching out pthreads with c11 thread support.
 
 Add argument for total number of games allowed to play.?
 Solve the bias in +1billion runs of the simulation. If it's too ineffecient to do so, perhaps provide an option of PRNG algorithms to use

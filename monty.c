@@ -1,7 +1,7 @@
 #include "monty.h"
 
 // Globals
-int killtime=0;
+volatile sig_atomic_t killtime=0;
 int verbose=0;
 int noAnsi=0;
 int stop=0;
